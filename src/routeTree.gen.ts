@@ -9,50 +9,117 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
+import { Route as AuthenticatedEntradasRouteImport } from './routes/_authenticated/entradas'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDespesasRoute = AuthenticatedDespesasRouteImport.update({
+  id: '/despesas',
+  path: '/despesas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEntradasRoute = AuthenticatedEntradasRouteImport.update({
+  id: '/entradas',
+  path: '/entradas',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/despesas': typeof AuthenticatedDespesasRoute
+  '/entradas': typeof AuthenticatedEntradasRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/despesas': typeof AuthenticatedDespesasRoute
+  '/entradas': typeof AuthenticatedEntradasRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
+  '/_authenticated/entradas': typeof AuthenticatedEntradasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/auth' | '/despesas' | '/entradas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/auth' | '/despesas' | '/entradas'
+  id:
+    | '__root__'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/despesas'
+    | '/_authenticated/entradas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/despesas': {
+      id: '/_authenticated/despesas'
+      path: '/despesas'
+      fullPath: '/despesas'
+      preLoaderRoute: typeof AuthenticatedDespesasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/entradas': {
+      id: '/_authenticated/entradas'
+      path: '/entradas'
+      fullPath: '/entradas'
+      preLoaderRoute: typeof AuthenticatedEntradasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
+  AuthenticatedEntradasRoute: typeof AuthenticatedEntradasRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,
+  AuthenticatedEntradasRoute: AuthenticatedEntradasRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
