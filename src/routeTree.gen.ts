@@ -11,7 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAdiantamentosRouteImport } from './routes/_authenticated/adiantamentos'
+import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
+import { Route as AuthenticatedEmprestimosRouteImport } from './routes/_authenticated/emprestimos'
 import { Route as AuthenticatedEntradasRouteImport } from './routes/_authenticated/entradas'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -23,11 +27,33 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdiantamentosRoute =
+  AuthenticatedAdiantamentosRouteImport.update({
+    id: '/adiantamentos',
+    path: '/adiantamentos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDespesasRoute = AuthenticatedDespesasRouteImport.update({
   id: '/despesas',
   path: '/despesas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEmprestimosRoute =
+  AuthenticatedEmprestimosRouteImport.update({
+    id: '/emprestimos',
+    path: '/emprestimos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEntradasRoute = AuthenticatedEntradasRouteImport.update({
   id: '/entradas',
   path: '/entradas',
@@ -35,35 +61,63 @@ const AuthenticatedEntradasRoute = AuthenticatedEntradasRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedRouteRouteWithChildren
+  '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/adiantamentos': typeof AuthenticatedAdiantamentosRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
   '/despesas': typeof AuthenticatedDespesasRoute
+  '/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/entradas': typeof AuthenticatedEntradasRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/adiantamentos': typeof AuthenticatedAdiantamentosRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
   '/despesas': typeof AuthenticatedDespesasRoute
+  '/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/entradas': typeof AuthenticatedEntradasRoute
+  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/adiantamentos': typeof AuthenticatedAdiantamentosRoute
+  '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
+  '/_authenticated/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/_authenticated/entradas': typeof AuthenticatedEntradasRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/despesas' | '/entradas'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/adiantamentos'
+    | '/categorias'
+    | '/despesas'
+    | '/emprestimos'
+    | '/entradas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/despesas' | '/entradas'
+  to:
+    | '/auth'
+    | '/adiantamentos'
+    | '/categorias'
+    | '/despesas'
+    | '/emprestimos'
+    | '/entradas'
+    | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/adiantamentos'
+    | '/_authenticated/categorias'
     | '/_authenticated/despesas'
+    | '/_authenticated/emprestimos'
     | '/_authenticated/entradas'
+    | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -87,11 +141,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/adiantamentos': {
+      id: '/_authenticated/adiantamentos'
+      path: '/adiantamentos'
+      fullPath: '/adiantamentos'
+      preLoaderRoute: typeof AuthenticatedAdiantamentosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/categorias': {
+      id: '/_authenticated/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof AuthenticatedCategoriasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/despesas': {
       id: '/_authenticated/despesas'
       path: '/despesas'
       fullPath: '/despesas'
       preLoaderRoute: typeof AuthenticatedDespesasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/emprestimos': {
+      id: '/_authenticated/emprestimos'
+      path: '/emprestimos'
+      fullPath: '/emprestimos'
+      preLoaderRoute: typeof AuthenticatedEmprestimosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/entradas': {
@@ -105,13 +187,21 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdiantamentosRoute: typeof AuthenticatedAdiantamentosRoute
+  AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
+  AuthenticatedEmprestimosRoute: typeof AuthenticatedEmprestimosRoute
   AuthenticatedEntradasRoute: typeof AuthenticatedEntradasRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdiantamentosRoute: AuthenticatedAdiantamentosRoute,
+  AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,
+  AuthenticatedEmprestimosRoute: AuthenticatedEmprestimosRoute,
   AuthenticatedEntradasRoute: AuthenticatedEntradasRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
