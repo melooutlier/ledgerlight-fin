@@ -11,8 +11,16 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAdiantamentosRouteImport } from './routes/_authenticated/adiantamentos'
+import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
+import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
+import { Route as AuthenticatedEmprestimosRouteImport } from './routes/_authenticated/emprestimos'
 import { Route as AuthenticatedEntradasRouteImport } from './routes/_authenticated/entradas'
+import { Route as AuthenticatedMovimentacoesRouteImport } from './routes/_authenticated/movimentacoes'
+import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
+import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -23,47 +31,143 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdiantamentosRoute =
+  AuthenticatedAdiantamentosRouteImport.update({
+    id: '/adiantamentos',
+    path: '/adiantamentos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedConfiguracoesRoute =
+  AuthenticatedConfiguracoesRouteImport.update({
+    id: '/configuracoes',
+    path: '/configuracoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDespesasRoute = AuthenticatedDespesasRouteImport.update({
   id: '/despesas',
   path: '/despesas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEmprestimosRoute =
+  AuthenticatedEmprestimosRouteImport.update({
+    id: '/emprestimos',
+    path: '/emprestimos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEntradasRoute = AuthenticatedEntradasRouteImport.update({
   id: '/entradas',
   path: '/entradas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMovimentacoesRoute =
+  AuthenticatedMovimentacoesRouteImport.update({
+    id: '/movimentacoes',
+    path: '/movimentacoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrcamentoRoute = AuthenticatedOrcamentoRouteImport.update({
+  id: '/orcamento',
+  path: '/orcamento',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedRouteRouteWithChildren
+  '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/adiantamentos': typeof AuthenticatedAdiantamentosRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/despesas': typeof AuthenticatedDespesasRoute
+  '/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/entradas': typeof AuthenticatedEntradasRoute
+  '/movimentacoes': typeof AuthenticatedMovimentacoesRoute
+  '/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/relatorios': typeof AuthenticatedRelatoriosRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/adiantamentos': typeof AuthenticatedAdiantamentosRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/despesas': typeof AuthenticatedDespesasRoute
+  '/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/entradas': typeof AuthenticatedEntradasRoute
+  '/movimentacoes': typeof AuthenticatedMovimentacoesRoute
+  '/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/adiantamentos': typeof AuthenticatedAdiantamentosRoute
+  '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
+  '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
+  '/_authenticated/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/_authenticated/entradas': typeof AuthenticatedEntradasRoute
+  '/_authenticated/movimentacoes': typeof AuthenticatedMovimentacoesRoute
+  '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/despesas' | '/entradas'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/adiantamentos'
+    | '/categorias'
+    | '/configuracoes'
+    | '/despesas'
+    | '/emprestimos'
+    | '/entradas'
+    | '/movimentacoes'
+    | '/orcamento'
+    | '/relatorios'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/despesas' | '/entradas'
+  to:
+    | '/auth'
+    | '/adiantamentos'
+    | '/categorias'
+    | '/configuracoes'
+    | '/despesas'
+    | '/emprestimos'
+    | '/entradas'
+    | '/movimentacoes'
+    | '/orcamento'
+    | '/relatorios'
+    | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/adiantamentos'
+    | '/_authenticated/categorias'
+    | '/_authenticated/configuracoes'
     | '/_authenticated/despesas'
+    | '/_authenticated/emprestimos'
     | '/_authenticated/entradas'
+    | '/_authenticated/movimentacoes'
+    | '/_authenticated/orcamento'
+    | '/_authenticated/relatorios'
+    | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -87,11 +191,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/adiantamentos': {
+      id: '/_authenticated/adiantamentos'
+      path: '/adiantamentos'
+      fullPath: '/adiantamentos'
+      preLoaderRoute: typeof AuthenticatedAdiantamentosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/categorias': {
+      id: '/_authenticated/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof AuthenticatedCategoriasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/configuracoes': {
+      id: '/_authenticated/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof AuthenticatedConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/despesas': {
       id: '/_authenticated/despesas'
       path: '/despesas'
       fullPath: '/despesas'
       preLoaderRoute: typeof AuthenticatedDespesasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/emprestimos': {
+      id: '/_authenticated/emprestimos'
+      path: '/emprestimos'
+      fullPath: '/emprestimos'
+      preLoaderRoute: typeof AuthenticatedEmprestimosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/entradas': {
@@ -101,17 +240,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEntradasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/movimentacoes': {
+      id: '/_authenticated/movimentacoes'
+      path: '/movimentacoes'
+      fullPath: '/movimentacoes'
+      preLoaderRoute: typeof AuthenticatedMovimentacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/orcamento': {
+      id: '/_authenticated/orcamento'
+      path: '/orcamento'
+      fullPath: '/orcamento'
+      preLoaderRoute: typeof AuthenticatedOrcamentoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/relatorios': {
+      id: '/_authenticated/relatorios'
+      path: '/relatorios'
+      fullPath: '/relatorios'
+      preLoaderRoute: typeof AuthenticatedRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdiantamentosRoute: typeof AuthenticatedAdiantamentosRoute
+  AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
+  AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
+  AuthenticatedEmprestimosRoute: typeof AuthenticatedEmprestimosRoute
   AuthenticatedEntradasRoute: typeof AuthenticatedEntradasRoute
+  AuthenticatedMovimentacoesRoute: typeof AuthenticatedMovimentacoesRoute
+  AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRoute
+  AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdiantamentosRoute: AuthenticatedAdiantamentosRoute,
+  AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
+  AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,
+  AuthenticatedEmprestimosRoute: AuthenticatedEmprestimosRoute,
   AuthenticatedEntradasRoute: AuthenticatedEntradasRoute,
+  AuthenticatedMovimentacoesRoute: AuthenticatedMovimentacoesRoute,
+  AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRoute,
+  AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
