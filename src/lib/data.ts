@@ -122,7 +122,7 @@ function useInvalidateAll() {
 }
 
 type TxInput = {
-  id?: string;
+  id?: string | undefined;
   type: "income" | "expense";
   description: string;
   amount: number;
@@ -163,7 +163,7 @@ export function useDeleteRow(table: "transactions" | "loans" | "personal_advance
 }
 
 type LoanInput = {
-  id?: string;
+  id?: string | undefined;
   person_name: string;
   amount: number;
   loan_date: string;
@@ -214,7 +214,7 @@ export function useDeleteLoanPayment() {
 }
 
 type AdvanceInput = {
-  id?: string;
+  id?: string | undefined;
   purpose: string;
   amount: number;
   advance_date: string;
@@ -242,7 +242,7 @@ export function useSaveAdvance() {
 export function useSaveCategory() {
   const invalidate = useInvalidateAll();
   return useMutation({
-    mutationFn: async (input: { id?: string; name: string; kind: "income" | "expense" }) => {
+    mutationFn: async (input: { id?: string | undefined; name: string; kind: "income" | "expense" }) => {
       const user_id = await uid();
       if (input.id) {
         const { error } = await supabase
