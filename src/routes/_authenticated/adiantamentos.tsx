@@ -9,6 +9,7 @@ import { advanceSummary, useAdvances, useDeleteRow, useTransactions } from "@/li
 import { dateLabel, money } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/adiantamentos")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Adiantamentos — Meu Financeiro" },

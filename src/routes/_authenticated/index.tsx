@@ -31,6 +31,7 @@ import { buildPeriod, inPeriod, monthStartISO, type PeriodKey } from "@/lib/peri
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Dashboard — Meu Financeiro" },

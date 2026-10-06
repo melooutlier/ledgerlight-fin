@@ -23,6 +23,7 @@ import { useCategories, useTransactions } from "@/lib/data";
 import { dateLabel, money, monthLabel, num, shortMonth } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/relatorios")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Relatórios — Meu Financeiro" },

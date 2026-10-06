@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useClearDemoData, useCurrentUser } from "@/lib/data";
 
 export const Route = createFileRoute("/_authenticated/configuracoes")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Configurações — Meu Financeiro" },

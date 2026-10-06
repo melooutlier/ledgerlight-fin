@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://ledgerlight-fin.lovable.app/sitemap.xml

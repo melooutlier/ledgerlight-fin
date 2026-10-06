@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Entrar — Meu Financeiro" },

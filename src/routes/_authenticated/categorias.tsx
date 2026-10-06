@@ -25,6 +25,7 @@ import { money, num } from "@/lib/format";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/categorias")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Categorias — Meu Financeiro" },
