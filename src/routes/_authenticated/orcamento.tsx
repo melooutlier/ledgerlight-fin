@@ -28,6 +28,7 @@ import { monthStartISO } from "@/lib/period";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/orcamento")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Orçamento — Meu Financeiro" },

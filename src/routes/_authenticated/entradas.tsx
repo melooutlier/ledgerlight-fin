@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { TransactionsView } from "@/components/transactions-view";
 
 export const Route = createFileRoute("/_authenticated/entradas")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Entradas — Meu Financeiro" },

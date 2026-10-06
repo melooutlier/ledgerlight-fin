@@ -15,6 +15,7 @@ import {
 import { dateLabel, money } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/emprestimos")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Empréstimos — Meu Financeiro" },

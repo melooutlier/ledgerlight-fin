@@ -17,6 +17,7 @@ import { buildPeriod, inPeriod, type PeriodKey } from "@/lib/period";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/movimentacoes")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Movimentações — Meu Financeiro" },
