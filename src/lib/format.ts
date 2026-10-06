@@ -36,7 +36,7 @@ export function monthLabel(iso: string): string {
 
 export function shortMonth(iso: string): string {
   const d = new Date(`${iso.slice(0, 10)}T00:00:00`);
-  return `${MONTHS[d.getMonth()].slice(0, 3)}/${String(d.getFullYear()).slice(2)}`;
+  return `${(MONTHS[d.getMonth()] ?? "").slice(0, 3)}/${String(d.getFullYear()).slice(2)}`;
 }
 
 export function dateLabel(iso: string | null | undefined): string {

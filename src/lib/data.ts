@@ -143,7 +143,7 @@ export function useSaveTransaction() {
         const { error } = await supabase.from("transactions").update(rest).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("transactions").insert({ ...input, user_id });
+        const { error } = await supabase.from("transactions").insert({ ...stripId(input), user_id });
         if (error) throw error;
       }
     },
@@ -182,7 +182,7 @@ export function useSaveLoan() {
         const { error } = await supabase.from("loans").update(rest).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("loans").insert({ ...input, user_id });
+        const { error } = await supabase.from("loans").insert({ ...stripId(input), user_id });
         if (error) throw error;
       }
     },
@@ -195,7 +195,7 @@ export function useAddLoanPayment() {
   return useMutation({
     mutationFn: async (input: { loan_id: string; amount: number; paid_at: string; notes: string | null }) => {
       const user_id = await uid();
-      const { error } = await supabase.from("loan_payments").insert({ ...input, user_id });
+      const { error } = await supabase.from("loan_payments").insert({ ...stripId(input), user_id });
       if (error) throw error;
     },
     onSuccess: invalidate,
@@ -231,7 +231,7 @@ export function useSaveAdvance() {
         const { error } = await supabase.from("personal_advances").update(rest).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("personal_advances").insert({ ...input, user_id });
+        const { error } = await supabase.from("personal_advances").insert({ ...stripId(input), user_id });
         if (error) throw error;
       }
     },
@@ -337,4 +337,9 @@ export function advanceSummary(advance: Advance, transactions: Transaction[]) {
     .reduce((s, t) => s + num(t.amount), 0);
   const total = num(advance.amount);
   return { used, total, remaining: Math.max(total - used, 0) };
+}
+
+function stripId<T extends { id?: string | undefined }>(input: T): Omit<T, "id"> {
+  const { id: _id, ...rest } = input;
+  return rest;
 }
