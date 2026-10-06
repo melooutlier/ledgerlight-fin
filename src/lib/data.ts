@@ -195,7 +195,7 @@ export function useAddLoanPayment() {
   return useMutation({
     mutationFn: async (input: { loan_id: string; amount: number; paid_at: string; notes: string | null }) => {
       const user_id = await uid();
-      const { error } = await supabase.from("loan_payments").insert({ ...stripId(input), user_id });
+      const { error } = await supabase.from("loan_payments").insert({ ...input, user_id });
       if (error) throw error;
     },
     onSuccess: invalidate,
