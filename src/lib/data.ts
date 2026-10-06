@@ -122,7 +122,7 @@ function useInvalidateAll() {
 }
 
 type TxInput = {
-  id?: string;
+  id?: string | undefined;
   type: "income" | "expense";
   description: string;
   amount: number;
@@ -143,7 +143,7 @@ export function useSaveTransaction() {
         const { error } = await supabase.from("transactions").update(rest).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("transactions").insert({ ...input, user_id });
+        const { error } = await supabase.from("transactions").insert({ ...stripId(input), user_id });
         if (error) throw error;
       }
     },
@@ -163,7 +163,7 @@ export function useDeleteRow(table: "transactions" | "loans" | "personal_advance
 }
 
 type LoanInput = {
-  id?: string;
+  id?: string | undefined;
   person_name: string;
   amount: number;
   loan_date: string;
@@ -182,7 +182,7 @@ export function useSaveLoan() {
         const { error } = await supabase.from("loans").update(rest).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("loans").insert({ ...input, user_id });
+        const { error } = await supabase.from("loans").insert({ ...stripId(input), user_id });
         if (error) throw error;
       }
     },
@@ -214,7 +214,7 @@ export function useDeleteLoanPayment() {
 }
 
 type AdvanceInput = {
-  id?: string;
+  id?: string | undefined;
   purpose: string;
   amount: number;
   advance_date: string;
@@ -231,7 +231,7 @@ export function useSaveAdvance() {
         const { error } = await supabase.from("personal_advances").update(rest).eq("id", id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("personal_advances").insert({ ...input, user_id });
+        const { error } = await supabase.from("personal_advances").insert({ ...stripId(input), user_id });
         if (error) throw error;
       }
     },
@@ -242,7 +242,7 @@ export function useSaveAdvance() {
 export function useSaveCategory() {
   const invalidate = useInvalidateAll();
   return useMutation({
-    mutationFn: async (input: { id?: string; name: string; kind: "income" | "expense" }) => {
+    mutationFn: async (input: { id?: string | undefined; name: string; kind: "income" | "expense" }) => {
       const user_id = await uid();
       if (input.id) {
         const { error } = await supabase
@@ -337,4 +337,9 @@ export function advanceSummary(advance: Advance, transactions: Transaction[]) {
     .reduce((s, t) => s + num(t.amount), 0);
   const total = num(advance.amount);
   return { used, total, remaining: Math.max(total - used, 0) };
+}
+
+function stripId<T extends { id?: string | undefined }>(input: T): Omit<T, "id"> {
+  const { id: _id, ...rest } = input;
+  return rest;
 }

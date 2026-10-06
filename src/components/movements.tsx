@@ -53,13 +53,13 @@ export function useMovements(): Ctx {
 }
 
 export function MovementsProvider({ children }: { children: ReactNode }) {
-  const [txState, setTxState] = useState<{ open: boolean; type: TxType; tx?: Transaction }>({
+  const [txState, setTxState] = useState<{ open: boolean; type: TxType; tx?: Transaction | undefined }>({
     open: false,
     type: "expense",
   });
-  const [loanState, setLoanState] = useState<{ open: boolean; loan?: Loan }>({ open: false });
-  const [advState, setAdvState] = useState<{ open: boolean; advance?: Advance }>({ open: false });
-  const [payState, setPayState] = useState<{ open: boolean; loan?: Loan }>({ open: false });
+  const [loanState, setLoanState] = useState<{ open: boolean; loan?: Loan | undefined }>({ open: false });
+  const [advState, setAdvState] = useState<{ open: boolean; advance?: Advance | undefined }>({ open: false });
+  const [payState, setPayState] = useState<{ open: boolean; loan?: Loan | undefined }>({ open: false });
 
   const value = useMemo<Ctx>(
     () => ({
@@ -104,7 +104,7 @@ function TransactionDialog({
   state,
   onClose,
 }: {
-  state: { open: boolean; type: TxType; tx?: Transaction };
+  state: { open: boolean; type: TxType; tx?: Transaction | undefined };
   onClose: () => void;
 }) {
   const { data: categories = [] } = useCategories();
@@ -267,7 +267,7 @@ function LoanDialog({
   state,
   onClose,
 }: {
-  state: { open: boolean; loan?: Loan };
+  state: { open: boolean; loan?: Loan | undefined };
   onClose: () => void;
 }) {
   const save = useSaveLoan();
@@ -282,8 +282,8 @@ function LoanDialog({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const value = Number(amount.replace(",", "."));
-    if (!person.trim()) return toast.error("Indique o nome da pessoa.");
-    if (!Number.isFinite(value) || value <= 0) return toast.error("Indique um valor válido.");
+    if (!person.trim()) { toast.error("Indique o nome da pessoa."); return; }
+    if (!Number.isFinite(value) || value <= 0) { toast.error("Indique um valor válido."); return; }
     try {
       await save.mutateAsync({
         id: loan?.id,
@@ -386,7 +386,7 @@ function AdvanceDialog({
   state,
   onClose,
 }: {
-  state: { open: boolean; advance?: Advance };
+  state: { open: boolean; advance?: Advance | undefined };
   onClose: () => void;
 }) {
   const save = useSaveAdvance();
@@ -399,8 +399,8 @@ function AdvanceDialog({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const value = Number(amount.replace(",", "."));
-    if (!purpose.trim()) return toast.error("Indique a finalidade.");
-    if (!Number.isFinite(value) || value <= 0) return toast.error("Indique um valor válido.");
+    if (!purpose.trim()) { toast.error("Indique a finalidade."); return; }
+    if (!Number.isFinite(value) || value <= 0) { toast.error("Indique um valor válido."); return; }
     try {
       await save.mutateAsync({
         id: advance?.id,
@@ -485,7 +485,7 @@ function PaymentDialog({
   state,
   onClose,
 }: {
-  state: { open: boolean; loan?: Loan };
+  state: { open: boolean; loan?: Loan | undefined };
   onClose: () => void;
 }) {
   const add = useAddLoanPayment();
@@ -500,7 +500,7 @@ function PaymentDialog({
     e.preventDefault();
     if (!loan) return;
     const value = Number(amount.replace(",", "."));
-    if (!Number.isFinite(value) || value <= 0) return toast.error("Indique um valor válido.");
+    if (!Number.isFinite(value) || value <= 0) { toast.error("Indique um valor válido."); return; }
     try {
       await add.mutateAsync({
         loan_id: loan.id,

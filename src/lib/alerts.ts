@@ -9,7 +9,7 @@ export function buildAlerts(args: {
   payments: LoanPayment[];
   transactions: Transaction[];
   categories: Category[];
-  budget?: Budget;
+  budget?: Budget | undefined;
   budgetCategories: BudgetCategory[];
 }): Alert[] {
   const { loans, payments, transactions, categories, budget, budgetCategories } = args;
