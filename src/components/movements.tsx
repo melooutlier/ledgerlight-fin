@@ -282,8 +282,8 @@ function LoanDialog({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const value = Number(amount.replace(",", "."));
-    if (!person.trim()) return toast.error("Indique o nome da pessoa.");
-    if (!Number.isFinite(value) || value <= 0) return toast.error("Indique um valor válido.");
+    if (!person.trim()) { toast.error("Indique o nome da pessoa."); return; }
+    if (!Number.isFinite(value) || value <= 0) { toast.error("Indique um valor válido."); return; }
     try {
       await save.mutateAsync({
         id: loan?.id,
@@ -399,8 +399,8 @@ function AdvanceDialog({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const value = Number(amount.replace(",", "."));
-    if (!purpose.trim()) return toast.error("Indique a finalidade.");
-    if (!Number.isFinite(value) || value <= 0) return toast.error("Indique um valor válido.");
+    if (!purpose.trim()) { toast.error("Indique a finalidade."); return; }
+    if (!Number.isFinite(value) || value <= 0) { toast.error("Indique um valor válido."); return; }
     try {
       await save.mutateAsync({
         id: advance?.id,
@@ -500,7 +500,7 @@ function PaymentDialog({
     e.preventDefault();
     if (!loan) return;
     const value = Number(amount.replace(",", "."));
-    if (!Number.isFinite(value) || value <= 0) return toast.error("Indique um valor válido.");
+    if (!Number.isFinite(value) || value <= 0) { toast.error("Indique um valor válido."); return; }
     try {
       await add.mutateAsync({
         loan_id: loan.id,
