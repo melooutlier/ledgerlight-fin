@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/movimentacoes")({
   component: MovementsPage,
 });
 
-type Kind = "income" | "expense" | "loan" | "loan_payment" | "advance";
+type Kind = "income" | "expense" | "loan" | "loan_payment" | "advance" | "transfer";
 
 const KIND_LABEL: Record<Kind, string> = {
   income: "Entrada",
@@ -40,6 +40,7 @@ const KIND_LABEL: Record<Kind, string> = {
   loan: "Empréstimo",
   loan_payment: "Pagamento de empréstimo",
   advance: "Adiantamento",
+  transfer: "Transferência",
 };
 
 function MovementsPage() {
@@ -55,18 +56,28 @@ function MovementsPage() {
   const { data: payments = [] } = useLoanPayments();
   const { data: advances = [] } = useAdvances();
   const { data: categories = [] } = useCategories();
+  const { data: accounts = [] } = useAccounts();
+  const accName = (id: string | null) => accounts.find((a) => a.id === id)?.name;
 
   const items = useMemo(() => {
-    const list: { id: string; date: string; kind: Kind; title: string; sub: string; amount: number; demo: boolean }[] = [];
+    const list: { id: string; date: string; kind: Kind; title: string; sub: string; amount: number; demo: boolean; emoji: string; pending?: boolean }[] = [];
     for (const t of transactions) {
+      if (t.type === "transfer_in") continue;
+      const isTransfer = t.type === "transfer_out";
+      const to = isTransfer ? transactions.find((x) => x.transfer_group === t.transfer_group && x.id !== t.id) : undefined;
+      const catName = categories.find((c) => c.id === t.category_id)?.name;
       list.push({
         id: `t-${t.id}`,
         date: t.tx_date,
-        kind: t.type as Kind,
+        kind: isTransfer ? "transfer" : (t.type as Kind),
         title: t.description,
-        sub: [categories.find((c) => c.id === t.category_id)?.name, t.method].filter(Boolean).join(" · "),
+        sub: isTransfer
+          ? `${accName(t.account_id) ?? "?"} → ${accName(to?.account_id ?? null) ?? "?"}`
+          : [catName, accName(t.account_id) ?? t.method].filter(Boolean).join(" · "),
         amount: num(t.amount),
         demo: t.is_demo,
+        emoji: isTransfer ? "🔁" : emojiFor(t.description, catName, t.type),
+        pending: !t.confirmed,
       });
     }
     for (const l of loans) {
@@ -78,6 +89,7 @@ function MovementsPage() {
         sub: l.reason ?? "",
         amount: num(l.amount),
         demo: l.is_demo,
+        emoji: "🤝",
       });
     }
     for (const p of payments) {
@@ -90,6 +102,7 @@ function MovementsPage() {
         sub: p.notes ?? "",
         amount: num(p.amount),
         demo: p.is_demo,
+        emoji: "✅",
       });
     }
     for (const a of advances) {
@@ -101,10 +114,11 @@ function MovementsPage() {
         sub: a.notes ?? "",
         amount: num(a.amount),
         demo: a.is_demo,
+        emoji: "🧾",
       });
     }
     return list.sort((x, y) => (x.date < y.date ? 1 : -1));
-  }, [transactions, loans, payments, advances, categories]);
+  }, [transactions, loans, payments, advances, categories, accounts]);
 
   const filtered = items.filter(
     (i) =>
@@ -148,16 +162,20 @@ function MovementsPage() {
         )}
         {filtered.map((i) => (
           <div key={i.id} className="flex items-center justify-between gap-3 p-4">
-            <div className="min-w-0">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-xl">{i.emoji}</span>
+              <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="truncate font-medium">{i.title}</p>
                 <Badge variant="secondary">{KIND_LABEL[i.kind]}</Badge>
                 {i.demo && <Badge variant="outline">demo</Badge>}
+                {i.pending && <Badge variant="outline">por confirmar</Badge>}
               </div>
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
                 {dateLabel(i.date)}
                 {i.sub ? ` · ${i.sub}` : ""}
               </p>
+              </div>
             </div>
             <span
               className={cn(
