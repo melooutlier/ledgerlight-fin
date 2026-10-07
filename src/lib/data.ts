@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
-import { num } from "./format";
+import { num, todayISO } from "./format";
+import { effectivePlan, hasFeature, ACCOUNT_LIMIT, type Feature, type PlanId } from "./plans";
 
 export type Category = Database["public"]["Tables"]["categories"]["Row"];
 export type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
@@ -10,6 +11,11 @@ export type LoanPayment = Database["public"]["Tables"]["loan_payments"]["Row"];
 export type Advance = Database["public"]["Tables"]["personal_advances"]["Row"];
 export type Budget = Database["public"]["Tables"]["budgets"]["Row"];
 export type BudgetCategory = Database["public"]["Tables"]["budget_categories"]["Row"];
+export type Account = Database["public"]["Tables"]["accounts"]["Row"];
+export type SavingsGoal = Database["public"]["Tables"]["savings_goals"]["Row"];
+export type HouseholdBill = Database["public"]["Tables"]["household_bills"]["Row"];
+export type Subscription = Database["public"]["Tables"]["subscriptions"]["Row"];
+export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 async function uid(): Promise<string> {
   const { data } = await supabase.auth.getUser();
@@ -131,6 +137,9 @@ type TxInput = {
   method: string | null;
   notes: string | null;
   advance_id?: string | null;
+  account_id?: string | null;
+  image_path?: string | null;
+  confirmed?: boolean;
 };
 
 export function useSaveTransaction() {
@@ -151,7 +160,9 @@ export function useSaveTransaction() {
   });
 }
 
-export function useDeleteRow(table: "transactions" | "loans" | "personal_advances" | "categories") {
+export function useDeleteRow(
+  table: "transactions" | "loans" | "personal_advances" | "categories" | "accounts" | "savings_goals" | "household_bills",
+) {
   const invalidate = useInvalidateAll();
   return useMutation({
     mutationFn: async (id: string) => {
@@ -193,7 +204,14 @@ export function useSaveLoan() {
 export function useAddLoanPayment() {
   const invalidate = useInvalidateAll();
   return useMutation({
-    mutationFn: async (input: { loan_id: string; amount: number; paid_at: string; notes: string | null }) => {
+    mutationFn: async (input: {
+      loan_id: string;
+      amount: number;
+      paid_at: string;
+      notes: string | null;
+      account_id?: string | null;
+      image_path?: string | null;
+    }) => {
       const user_id = await uid();
       const { error } = await supabase.from("loan_payments").insert({ ...input, user_id });
       if (error) throw error;
@@ -342,4 +360,218 @@ export function advanceSummary(advance: Advance, transactions: Transaction[]) {
 function stripId<T extends { id?: string | undefined }>(input: T): Omit<T, "id"> {
   const { id: _id, ...rest } = input;
   return rest;
+}
+
+
+/* ---------- accounts, savings, household, plans ---------- */
+
+function listQuery<T>(key: string, table: "accounts" | "savings_goals" | "household_bills") {
+  return {
+    queryKey: [key],
+    queryFn: async (): Promise<T[]> => {
+      const { data, error } = await supabase.from(table).select("*").order("created_at");
+      if (error) throw error;
+      return (data ?? []) as T[];
+    },
+  };
+}
+
+export const useAccounts = () => useQuery(listQuery<Account>("accounts", "accounts"));
+export const useSavingsGoals = () => useQuery(listQuery<SavingsGoal>("savings_goals", "savings_goals"));
+export const useHouseholdBills = () => useQuery(listQuery<HouseholdBill>("household_bills", "household_bills"));
+
+export const ACCOUNT_TYPES: Record<string, { label: string; emoji: string }> = {
+  mpesa: { label: "M-Pesa", emoji: "📲" },
+  emola: { label: "e-Mola", emoji: "📱" },
+  mkesh: { label: "mKesh", emoji: "📳" },
+  banco: { label: "Banco", emoji: "🏦" },
+  dinheiro: { label: "Dinheiro", emoji: "💵" },
+  outra: { label: "Outra", emoji: "👛" },
+};
+
+export function useSaveAccount() {
+  const invalidate = useInvalidateAll();
+  return useMutation({
+    mutationFn: async (input: { id?: string | undefined; name: string; type: string; initial_balance: number; is_savings: boolean }) => {
+      const user_id = await uid();
+      if (input.id) {
+        const { id, ...rest } = input;
+        const { error } = await supabase.from("accounts").update(rest).eq("id", id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("accounts").insert({ ...stripId(input), user_id });
+        if (error) throw error;
+      }
+    },
+    onSuccess: invalidate,
+  });
+}
+
+export function useTransfer() {
+  const invalidate = useInvalidateAll();
+  return useMutation({
+    mutationFn: async (input: { from: string; to: string; amount: number; date: string; description: string }) => {
+      const user_id = await uid();
+      const group = crypto.randomUUID();
+      const base = { user_id, amount: input.amount, tx_date: input.date, description: input.description, transfer_group: group };
+      const { error } = await supabase.from("transactions").insert([
+        { ...base, type: "transfer_out", account_id: input.from },
+        { ...base, type: "transfer_in", account_id: input.to },
+      ]);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+}
+
+/** Balance per account: initial + confirmed income/transfers in − confirmed expenses/transfers out + loan payments received. */
+export function accountBalances(accounts: Account[], txs: Transaction[], payments: LoanPayment[]) {
+  const map = new Map<string, number>(accounts.map((a) => [a.id, num(a.initial_balance)]));
+  for (const t of txs) {
+    if (!t.account_id || !map.has(t.account_id) || !t.confirmed) continue;
+    const sign = t.type === "income" || t.type === "transfer_in" ? 1 : -1;
+    map.set(t.account_id, (map.get(t.account_id) ?? 0) + sign * num(t.amount));
+  }
+  for (const p of payments) {
+    if (p.account_id && map.has(p.account_id)) map.set(p.account_id, (map.get(p.account_id) ?? 0) + num(p.amount));
+  }
+  return map;
+}
+
+export function useSaveGoal() {
+  const invalidate = useInvalidateAll();
+  return useMutation({
+    mutationFn: async (input: {
+      id?: string | undefined;
+      name: string;
+      emoji: string;
+      target_amount: number;
+      saved_amount: number;
+      target_date: string | null;
+      account_id: string | null;
+    }) => {
+      const user_id = await uid();
+      if (input.id) {
+        const { id, ...rest } = input;
+        const { error } = await supabase.from("savings_goals").update(rest).eq("id", id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("savings_goals").insert({ ...stripId(input), user_id });
+        if (error) throw error;
+      }
+    },
+    onSuccess: invalidate,
+  });
+}
+
+export function useSaveBill() {
+  const invalidate = useInvalidateAll();
+  return useMutation({
+    mutationFn: async (input: {
+      id?: string | undefined;
+      name: string;
+      emoji: string;
+      amount: number;
+      due_day: number;
+      member: string | null;
+      last_paid_month?: string | null;
+    }) => {
+      const user_id = await uid();
+      if (input.id) {
+        const { id, ...rest } = input;
+        const { error } = await supabase.from("household_bills").update(rest).eq("id", id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("household_bills").insert({ ...stripId(input), user_id });
+        if (error) throw error;
+      }
+    },
+    onSuccess: invalidate,
+  });
+}
+
+/* ---------- receipts (photos) ---------- */
+
+export async function uploadReceipt(file: File): Promise<string> {
+  const user_id = await uid();
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const path = `${user_id}/${crypto.randomUUID()}.${ext}`;
+  const { error } = await supabase.storage.from("receipts").upload(path, file, { contentType: file.type });
+  if (error) throw error;
+  return path;
+}
+
+export function useReceiptUrl(path: string | null | undefined) {
+  return useQuery({
+    queryKey: ["receipt", path],
+    enabled: !!path,
+    staleTime: 50 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.storage.from("receipts").createSignedUrl(path!, 3600);
+      if (error) throw error;
+      return data.signedUrl;
+    },
+  });
+}
+
+/* ---------- plan & roles ---------- */
+
+export function useIsAdmin() {
+  return useQuery({
+    queryKey: ["is-admin"],
+    queryFn: async () => {
+      const user_id = await uid();
+      const { data } = await supabase.rpc("has_role", { _user_id: user_id, _role: "admin" });
+      return data === true;
+    },
+  });
+}
+
+export function usePlan() {
+  const admin = useIsAdmin();
+  const sub = useQuery({
+    queryKey: ["my-subscription"],
+    queryFn: async () => {
+      const user_id = await uid();
+      const { data } = await supabase.from("subscriptions").select("*").eq("user_id", user_id).maybeSingle();
+      return data;
+    },
+  });
+  const plan: PlanId = admin.data ? "casa" : effectivePlan(sub.data, todayISO());
+  return {
+    plan,
+    subscription: sub.data,
+    isAdmin: admin.data === true,
+    can: (f: Feature) => hasFeature(plan, f),
+    accountLimit: ACCOUNT_LIMIT[plan],
+    isLoading: sub.isLoading || admin.isLoading,
+  };
+}
+
+export function useAdminUsers() {
+  return useQuery({
+    queryKey: ["admin-users"],
+    queryFn: async () => {
+      const [{ data: profiles, error: e1 }, { data: subs, error: e2 }] = await Promise.all([
+        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+        supabase.from("subscriptions").select("*"),
+      ]);
+      if (e1) throw e1;
+      if (e2) throw e2;
+      const byUser = new Map((subs ?? []).map((s) => [s.user_id, s] as const));
+      return (profiles ?? []).map((p) => ({ profile: p, sub: byUser.get(p.id) ?? null }));
+    },
+  });
+}
+
+export function useUpdateSubscription() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { user_id: string; plan: string; status: string; expires_at: string | null }) => {
+      const { user_id, ...rest } = input;
+      const { error } = await supabase.from("subscriptions").update(rest).eq("user_id", user_id);
+      if (error) throw error;
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["admin-users"] }),
+  });
 }
