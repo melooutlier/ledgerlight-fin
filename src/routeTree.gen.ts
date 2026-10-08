@@ -14,13 +14,18 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdiantamentosRouteImport } from './routes/_authenticated/adiantamentos'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedCasaRouteImport } from './routes/_authenticated/casa'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
+import { Route as AuthenticatedContasRouteImport } from './routes/_authenticated/contas'
 import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
 import { Route as AuthenticatedEmprestimosRouteImport } from './routes/_authenticated/emprestimos'
 import { Route as AuthenticatedEntradasRouteImport } from './routes/_authenticated/entradas'
 import { Route as AuthenticatedMovimentacoesRouteImport } from './routes/_authenticated/movimentacoes'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
+import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
+import { Route as AuthenticatedPoupancaRouteImport } from './routes/_authenticated/poupanca'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -48,6 +53,16 @@ const AuthenticatedAdiantamentosRoute =
     path: '/adiantamentos',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCasaRoute = AuthenticatedCasaRouteImport.update({
+  id: '/casa',
+  path: '/casa',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
   id: '/categorias',
   path: '/categorias',
@@ -59,6 +74,11 @@ const AuthenticatedConfiguracoesRoute =
     path: '/configuracoes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedContasRoute = AuthenticatedContasRouteImport.update({
+  id: '/contas',
+  path: '/contas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDespesasRoute = AuthenticatedDespesasRouteImport.update({
   id: '/despesas',
   path: '/despesas',
@@ -86,6 +106,16 @@ const AuthenticatedOrcamentoRoute = AuthenticatedOrcamentoRouteImport.update({
   path: '/orcamento',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPlanosRoute = AuthenticatedPlanosRouteImport.update({
+  id: '/planos',
+  path: '/planos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPoupancaRoute = AuthenticatedPoupancaRouteImport.update({
+  id: '/poupanca',
+  path: '/poupanca',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
   id: '/relatorios',
   path: '/relatorios',
@@ -97,26 +127,36 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/adiantamentos': typeof AuthenticatedAdiantamentosRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/casa': typeof AuthenticatedCasaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/contas': typeof AuthenticatedContasRoute
   '/despesas': typeof AuthenticatedDespesasRoute
   '/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/entradas': typeof AuthenticatedEntradasRoute
   '/movimentacoes': typeof AuthenticatedMovimentacoesRoute
   '/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/planos': typeof AuthenticatedPlanosRoute
+  '/poupanca': typeof AuthenticatedPoupancaRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/adiantamentos': typeof AuthenticatedAdiantamentosRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/casa': typeof AuthenticatedCasaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/contas': typeof AuthenticatedContasRoute
   '/despesas': typeof AuthenticatedDespesasRoute
   '/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/entradas': typeof AuthenticatedEntradasRoute
   '/movimentacoes': typeof AuthenticatedMovimentacoesRoute
   '/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/planos': typeof AuthenticatedPlanosRoute
+  '/poupanca': typeof AuthenticatedPoupancaRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/': typeof AuthenticatedIndexRoute
 }
@@ -126,13 +166,18 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/adiantamentos': typeof AuthenticatedAdiantamentosRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/casa': typeof AuthenticatedCasaRoute
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/_authenticated/contas': typeof AuthenticatedContasRoute
   '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
   '/_authenticated/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/_authenticated/entradas': typeof AuthenticatedEntradasRoute
   '/_authenticated/movimentacoes': typeof AuthenticatedMovimentacoesRoute
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRoute
+  '/_authenticated/planos': typeof AuthenticatedPlanosRoute
+  '/_authenticated/poupanca': typeof AuthenticatedPoupancaRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
 }
@@ -143,26 +188,36 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/adiantamentos'
+    | '/admin'
+    | '/casa'
     | '/categorias'
     | '/configuracoes'
+    | '/contas'
     | '/despesas'
     | '/emprestimos'
     | '/entradas'
     | '/movimentacoes'
     | '/orcamento'
+    | '/planos'
+    | '/poupanca'
     | '/relatorios'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/sitemap.xml'
     | '/adiantamentos'
+    | '/admin'
+    | '/casa'
     | '/categorias'
     | '/configuracoes'
+    | '/contas'
     | '/despesas'
     | '/emprestimos'
     | '/entradas'
     | '/movimentacoes'
     | '/orcamento'
+    | '/planos'
+    | '/poupanca'
     | '/relatorios'
     | '/'
   id:
@@ -171,13 +226,18 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/_authenticated/adiantamentos'
+    | '/_authenticated/admin'
+    | '/_authenticated/casa'
     | '/_authenticated/categorias'
     | '/_authenticated/configuracoes'
+    | '/_authenticated/contas'
     | '/_authenticated/despesas'
     | '/_authenticated/emprestimos'
     | '/_authenticated/entradas'
     | '/_authenticated/movimentacoes'
     | '/_authenticated/orcamento'
+    | '/_authenticated/planos'
+    | '/_authenticated/poupanca'
     | '/_authenticated/relatorios'
     | '/_authenticated/'
   fileRoutesById: FileRoutesById
@@ -225,6 +285,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdiantamentosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/casa': {
+      id: '/_authenticated/casa'
+      path: '/casa'
+      fullPath: '/casa'
+      preLoaderRoute: typeof AuthenticatedCasaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/categorias': {
       id: '/_authenticated/categorias'
       path: '/categorias'
@@ -237,6 +311,13 @@ declare module '@tanstack/react-router' {
       path: '/configuracoes'
       fullPath: '/configuracoes'
       preLoaderRoute: typeof AuthenticatedConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/contas': {
+      id: '/_authenticated/contas'
+      path: '/contas'
+      fullPath: '/contas'
+      preLoaderRoute: typeof AuthenticatedContasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/despesas': {
@@ -274,6 +355,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrcamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/planos': {
+      id: '/_authenticated/planos'
+      path: '/planos'
+      fullPath: '/planos'
+      preLoaderRoute: typeof AuthenticatedPlanosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/poupanca': {
+      id: '/_authenticated/poupanca'
+      path: '/poupanca'
+      fullPath: '/poupanca'
+      preLoaderRoute: typeof AuthenticatedPoupancaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/relatorios': {
       id: '/_authenticated/relatorios'
       path: '/relatorios'
@@ -286,26 +381,36 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdiantamentosRoute: typeof AuthenticatedAdiantamentosRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedCasaRoute: typeof AuthenticatedCasaRoute
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
+  AuthenticatedContasRoute: typeof AuthenticatedContasRoute
   AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
   AuthenticatedEmprestimosRoute: typeof AuthenticatedEmprestimosRoute
   AuthenticatedEntradasRoute: typeof AuthenticatedEntradasRoute
   AuthenticatedMovimentacoesRoute: typeof AuthenticatedMovimentacoesRoute
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRoute
+  AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
+  AuthenticatedPoupancaRoute: typeof AuthenticatedPoupancaRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdiantamentosRoute: AuthenticatedAdiantamentosRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedCasaRoute: AuthenticatedCasaRoute,
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
+  AuthenticatedContasRoute: AuthenticatedContasRoute,
   AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,
   AuthenticatedEmprestimosRoute: AuthenticatedEmprestimosRoute,
   AuthenticatedEntradasRoute: AuthenticatedEntradasRoute,
   AuthenticatedMovimentacoesRoute: AuthenticatedMovimentacoesRoute,
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRoute,
+  AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
+  AuthenticatedPoupancaRoute: AuthenticatedPoupancaRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }

@@ -20,6 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EXPENSE_METHODS } from "@/lib/period";
+import { emojiFor } from "@/lib/emoji";
+import { Switch } from "@/components/ui/switch";
+import { Camera } from "lucide-react";
 import { todayISO, num, money } from "@/lib/format";
 import {
   useAddLoanPayment,
@@ -29,6 +32,10 @@ import {
   useSaveAdvance,
   useSaveLoan,
   useSaveTransaction,
+  useAccounts,
+  usePlan,
+  uploadReceipt,
+  ACCOUNT_TYPES,
   loanSummary,
   type Advance,
   type Loan,
@@ -120,6 +127,11 @@ function TransactionDialog({
   const [method, setMethod] = useState(tx?.method ?? NONE);
   const [notes, setNotes] = useState(tx?.notes ?? "");
   const [advanceId, setAdvanceId] = useState(tx?.advance_id ?? NONE);
+  const [accountId, setAccountId] = useState(tx?.account_id ?? NONE);
+  const [confirmed, setConfirmed] = useState(tx?.confirmed ?? true);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const catLabel = categories.find((c) => c.id === categoryId)?.name;
 
   const options = categories.filter((c) => c.kind === type);
 
@@ -131,9 +143,14 @@ function TransactionDialog({
       return;
     }
     try {
+      setUploading(true);
+      const image_path = file ? await uploadReceipt(file) : (tx?.image_path ?? null);
       await save.mutateAsync({
         id: tx?.id,
         type,
+        account_id: accountId === NONE ? null : accountId,
+        confirmed,
+        image_path,
         description: description.trim() || (type === "expense" ? "Despesa" : "Entrada"),
         amount: value,
         tx_date: date,
@@ -146,6 +163,8 @@ function TransactionDialog({
       onClose();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não foi possível guardar.");
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -213,14 +232,28 @@ function TransactionDialog({
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="description">Descrição</Label>
+            <div className="flex items-center gap-2">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-lg" aria-hidden>
+              {emojiFor(description, catLabel, type)}
+            </span>
             <Input
               id="description"
               value={description}
               maxLength={120}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={type === "expense" ? "Ex.: Compras do mês" : "Ex.: Salário"}
+              placeholder={type === "expense" ? "Ex.: Hambúrguer" : "Ex.: Salário"}
             />
+            </div>
           </div>
+          <AccountSelect value={accountId} onChange={setAccountId} />
+          <div className="flex items-center justify-between rounded-lg border px-3 py-2.5">
+            <div>
+              <p className="text-sm font-medium">{type === "expense" ? "Pagamento confirmado" : "Dinheiro recebido"}</p>
+              <p className="text-xs text-muted-foreground">Desligue se ainda estiver por {type === "expense" ? "pagar" : "receber"}.</p>
+            </div>
+            <Switch checked={confirmed} onCheckedChange={setConfirmed} />
+          </div>
+          <PhotoPicker file={file} onFile={setFile} existing={tx?.image_path} />
           {type === "expense" && advances.length > 0 && (
             <div className="space-y-1.5">
               <Label>Adiantamento pessoal (opcional)</Label>
@@ -253,8 +286,8 @@ function TransactionDialog({
             <Button type="button" variant="ghost" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={save.isPending}>
-              Guardar
+            <Button type="submit" disabled={save.isPending || uploading}>
+              {uploading ? "A enviar…" : "Guardar"}
             </Button>
           </DialogFooter>
         </form>
@@ -495,6 +528,8 @@ function PaymentDialog({
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(todayISO());
   const [notes, setNotes] = useState("");
+  const [accountId, setAccountId] = useState(NONE);
+  const [file, setFile] = useState<File | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -507,8 +542,10 @@ function PaymentDialog({
         amount: value,
         paid_at: date,
         notes: notes.trim() || null,
+        account_id: accountId === NONE ? null : accountId,
+        image_path: file ? await uploadReceipt(file) : null,
       });
-      toast.success("Pagamento registado.");
+      toast.success("Recebimento confirmado. ✅");
       onClose();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não foi possível guardar.");
@@ -519,7 +556,7 @@ function PaymentDialog({
     <Dialog open={state.open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Registar pagamento</DialogTitle>
+          <DialogTitle>Confirmar recebimento</DialogTitle>
           <DialogDescription>
             {loan?.person_name}
             {summary ? ` — falta ${money(summary.pending)}` : ""}
@@ -555,6 +592,8 @@ function PaymentDialog({
               onChange={(e) => setNotes(e.target.value)}
             />
           </div>
+          <AccountSelect value={accountId} onChange={setAccountId} />
+          <PhotoPicker file={file} onFile={setFile} />
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={onClose}>
               Cancelar
@@ -566,5 +605,48 @@ function PaymentDialog({
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function AccountSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { data: accounts = [] } = useAccounts();
+  if (accounts.length === 0) return null;
+  return (
+    <div className="space-y-1.5">
+      <Label>Conta / carteira</Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder="Escolher conta" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={NONE}>Não indicar</SelectItem>
+          {accounts.map((a) => (
+            <SelectItem key={a.id} value={a.id}>
+              {ACCOUNT_TYPES[a.type]?.emoji ?? "👛"} {a.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+function PhotoPicker({ file, onFile, existing }: { file: File | null; onFile: (f: File | null) => void; existing?: string | null }) {
+  const { can } = usePlan();
+  if (!can("photos")) {
+    return (
+      <p className="rounded-lg border border-dashed px-3 py-2 text-xs text-muted-foreground">
+        📷 Fotos de comprovativos e compras estão disponíveis a partir do plano Pessoal Avançado.
+      </p>
+    );
+  }
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor="photo" className="flex items-center gap-2">
+        <Camera className="size-4" /> Foto do comprovativo ou da compra
+      </Label>
+      <Input id="photo" type="file" accept="image/*" capture="environment" onChange={(e) => onFile(e.target.files?.[0] ?? null)} />
+      {!file && existing && <p className="text-xs text-muted-foreground">Já tem uma foto anexada. Escolha outra para substituir.</p>}
+    </div>
   );
 }
