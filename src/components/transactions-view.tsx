@@ -13,7 +13,9 @@ import {
 import { PageHeader } from "@/components/page-header";
 import { PeriodPicker } from "@/components/period-picker";
 import { useMovements } from "@/components/movements";
-import { useCategories, useDeleteRow, useTransactions } from "@/lib/data";
+import { useAccounts, useCategories, useDeleteRow, useSaveTransaction, useTransactions, type Transaction } from "@/lib/data";
+import { emojiFor } from "@/lib/emoji";
+import { ReceiptButton } from "@/components/receipt-button";
 import { buildPeriod, inPeriod, type PeriodKey } from "@/lib/period";
 import { dateLabel, money, num, todayISO } from "@/lib/format";
 
@@ -24,6 +26,16 @@ export function TransactionsView({ type }: { type: "income" | "expense" }) {
   const { data: categories = [] } = useCategories();
   const { openTransaction } = useMovements();
   const remove = useDeleteRow("transactions");
+  const save = useSaveTransaction();
+  const { data: accounts = [] } = useAccounts();
+  const accName = (id: string | null) => accounts.find((a) => a.id === id)?.name;
+  async function confirm(t: Transaction) {
+    await save.mutateAsync({
+      id: t.id, type: t.type as "income" | "expense", description: t.description, amount: Number(t.amount),
+      tx_date: t.tx_date, category_id: t.category_id, method: t.method, notes: t.notes, confirmed: true,
+    });
+    toast.success(t.type === "expense" ? "Pagamento confirmado." : "Recebimento confirmado.");
+  }
 
   const [periodKey, setPeriodKey] = useState<PeriodKey>("this_month");
   const [from, setFrom] = useState(todayISO());
@@ -129,11 +141,11 @@ export function TransactionsView({ type }: { type: "income" | "expense" }) {
       </div>
 
       <div className="overflow-hidden rounded-xl border bg-card">
-        <div className="hidden grid-cols-[110px_1fr_140px_130px_120px_80px] gap-3 border-b px-4 py-2.5 text-xs font-medium tracking-wide text-muted-foreground uppercase sm:grid">
+        <div className="hidden grid-cols-[100px_1fr_130px_120px_120px_120px] gap-3 border-b px-4 py-2.5 text-xs font-medium tracking-wide text-muted-foreground uppercase sm:grid">
           <span>Data</span>
           <span>Descrição</span>
           <span>Categoria</span>
-          <span>Método</span>
+          <span>Conta</span>
           <span className="text-right">Valor</span>
           <span className="text-right">Acções</span>
         </div>
@@ -147,11 +159,21 @@ export function TransactionsView({ type }: { type: "income" | "expense" }) {
           rows.map((t) => (
             <div
               key={t.id}
-              className="grid grid-cols-2 items-center gap-2 border-b px-4 py-3 text-sm last:border-b-0 sm:grid-cols-[110px_1fr_140px_130px_120px_80px] sm:gap-3"
+              className="grid grid-cols-2 items-center gap-2 border-b px-4 py-3 text-sm last:border-b-0 sm:grid-cols-[100px_1fr_130px_120px_120px_120px] sm:gap-3"
             >
               <span className="tnum text-muted-foreground">{dateLabel(t.tx_date)}</span>
-              <span className="order-first col-span-2 font-medium sm:order-none sm:col-span-1">
+              <span className="order-first col-span-2 flex items-center gap-2 font-medium sm:order-none sm:col-span-1">
+                <span className="text-lg" aria-hidden>{emojiFor(t.description, catName.get(t.category_id ?? ""), t.type)}</span>
                 {t.description}
+                {!t.confirmed && (
+                  <button
+                    type="button"
+                    onClick={() => confirm(t)}
+                    className="rounded bg-warning/15 px-1.5 py-0.5 text-[10px] text-foreground underline-offset-2 hover:underline"
+                  >
+                    {isExpense ? "por pagar · confirmar" : "por receber · confirmar"}
+                  </button>
+                )}
                 {t.is_demo && (
                   <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
                     demo
@@ -159,7 +181,7 @@ export function TransactionsView({ type }: { type: "income" | "expense" }) {
                 )}
               </span>
               <span className="text-muted-foreground">{catName.get(t.category_id ?? "") ?? "—"}</span>
-              <span className="text-muted-foreground">{t.method ?? "—"}</span>
+              <span className="text-muted-foreground">{accName(t.account_id) ?? t.method ?? "—"}</span>
               <span
                 className={`tnum text-right font-semibold ${isExpense ? "" : "text-positive"}`}
               >
@@ -167,6 +189,7 @@ export function TransactionsView({ type }: { type: "income" | "expense" }) {
                 {money(t.amount)}
               </span>
               <span className="flex justify-end gap-1">
+                <ReceiptButton path={t.image_path} />
                 <Button
                   variant="ghost"
                   size="icon"
