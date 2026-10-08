@@ -11,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAdvances, useCategories, useLoanPayments, useLoans, useTransactions } from "@/lib/data";
+import { useAccounts, useAdvances, useCategories, useLoanPayments, useLoans, useTransactions } from "@/lib/data";
+import { emojiFor } from "@/lib/emoji";
 import { dateLabel, money, num } from "@/lib/format";
 import { buildPeriod, inPeriod, type PeriodKey } from "@/lib/period";
 import { cn } from "@/lib/utils";
