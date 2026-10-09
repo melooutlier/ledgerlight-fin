@@ -110,8 +110,8 @@ function BillDialog({ state, onClose }: { state: { open: boolean; bill?: Househo
     e.preventDefault();
     const v = Number(amount.replace(",", "."));
     const d = Math.min(31, Math.max(1, Number(dueDay) || 1));
-    if (!name.trim()) return toast.error("Indique o nome.");
-    if (!Number.isFinite(v) || v <= 0) return toast.error("Indique um valor válido.");
+    if (!name.trim()) { toast.error("Indique o nome."); return; }
+    if (!Number.isFinite(v) || v <= 0) { toast.error("Indique um valor válido."); return; }
     await save.mutateAsync({ id: b?.id, name: name.trim(), emoji: emoji || "🏠", amount: v, due_day: d, member: member.trim() || null });
     toast.success("Conta guardada.");
     onClose();

@@ -139,7 +139,7 @@ export function AccountDialog({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim()) return toast.error("Indique o nome da conta.");
+    if (!name.trim()) { toast.error("Indique o nome da conta."); return; }
     try {
       await save.mutateAsync({ id: a?.id, name: name.trim(), type, initial_balance: Number(initial.replace(",", ".")) || 0, is_savings: isSavings });
       toast.success("Conta guardada.");
@@ -200,8 +200,8 @@ function TransferDialog({ open, onClose, accounts }: { open: boolean; onClose: (
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const v = Number(amount.replace(",", "."));
-    if (!from || !to || from === to) return toast.error("Escolha duas contas diferentes.");
-    if (!Number.isFinite(v) || v <= 0) return toast.error("Indique um valor válido.");
+    if (!from || !to || from === to) { toast.error("Escolha duas contas diferentes."); return; }
+    if (!Number.isFinite(v) || v <= 0) { toast.error("Indique um valor válido."); return; }
     const n = (id: string) => accounts.find((a) => a.id === id)?.name ?? "";
     await transfer.mutateAsync({ from, to, amount: v, date, description: `Transferência ${n(from)} → ${n(to)}` });
     toast.success("Transferência registada.");
