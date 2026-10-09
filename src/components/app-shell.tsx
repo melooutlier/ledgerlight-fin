@@ -13,6 +13,11 @@ import {
   Plus,
   Settings,
   Tags,
+  Landmark,
+  Home,
+  Crown,
+  Shield,
+  Coins,
   Target,
   Wallet,
 } from "lucide-react";
@@ -27,6 +32,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { MovementsProvider, useMovements } from "@/components/movements";
 import { cn } from "@/lib/utils";
+import { useIsAdmin } from "@/lib/data";
 
 const NAV = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -34,10 +40,14 @@ const NAV = [
   { to: "/entradas", label: "Entradas", icon: ArrowUpRight },
   { to: "/emprestimos", label: "Empréstimos", icon: HandCoins },
   { to: "/adiantamentos", label: "Adiantamentos", icon: PiggyBank },
+  { to: "/contas", label: "Contas", icon: Landmark },
+  { to: "/poupanca", label: "Poupança", icon: Coins },
+  { to: "/casa", label: "Casa", icon: Home },
   { to: "/orcamento", label: "Orçamento", icon: Target },
   { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
   { to: "/categorias", label: "Categorias", icon: Tags },
   { to: "/movimentacoes", label: "Movimentações", icon: ListOrdered },
+  { to: "/planos", label: "Planos", icon: Crown },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
 ] as const;
 
@@ -105,6 +115,7 @@ function Brand() {
 
 function NavList({ onNavigate }: { onNavigate: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { data: isAdmin } = useIsAdmin();
 
   return (
     <div className="flex-1 overflow-y-auto px-3">
@@ -131,6 +142,18 @@ function NavList({ onNavigate }: { onNavigate: () => void }) {
             </Link>
           );
         })}
+        {isAdmin && (
+          <Link
+            to="/admin"
+            onClick={onNavigate}
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              pathname.startsWith("/admin") ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+            )}
+          >
+            <Shield className="size-4" /> Administração
+          </Link>
+        )}
       </nav>
     </div>
   );
