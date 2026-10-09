@@ -13,3 +13,4 @@
 - Plan gating lives in src/lib/plans.ts (pure, tested) and is read via usePlan(); why: one source of truth for features per plan.
 - Admin rights come only from the user_roles table via has_role(); why: avoid privilege escalation.
 - Receipt photos go to the private "receipts" bucket under <user_id>/ and are shown via signed URLs; why: photos are private.
+- Shared shell and UI primitives own responsive navigation, touch targets and safe-area spacing; why: consistent phone and desktop behavior without changing financial logic.

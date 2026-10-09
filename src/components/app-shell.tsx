@@ -64,21 +64,22 @@ function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r bg-sidebar lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
         <Brand />
         <NavList onNavigate={() => undefined} />
         <Footer />
       </aside>
 
-      <div className="lg:pl-60">
-        <header className="sticky top-0 z-20 flex items-center gap-3 border-b bg-background/85 px-4 py-3 backdrop-blur lg:hidden">
+      <div className="min-w-0 lg:pl-64">
+        <header className="mobile-header sticky top-0 z-20 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b bg-surface/95 px-4 py-3 backdrop-blur lg:hidden">
+          <div className="flex min-w-0 items-center gap-2">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Abrir menu">
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
+            <SheetContent side="left" className="w-72 max-w-[85vw] p-0">
               <SheetTitle className="sr-only">Menu</SheetTitle>
               <div className="flex h-full flex-col bg-sidebar">
                 <Brand />
@@ -87,27 +88,29 @@ function Shell({ children }: { children: ReactNode }) {
               </div>
             </SheetContent>
           </Sheet>
-          <span className="font-bold">Meu Financeiro</span>
-          <div className="ml-auto">
+          <span className="truncate text-sm font-bold">Meu Financeiro</span>
+          </div>
+          <div className="shrink-0">
             <QuickAdd compact />
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl px-4 py-6 pb-24 sm:px-6 lg:py-10">{children}</main>
+        <main className="app-main mx-auto w-full min-w-0 max-w-7xl px-4 pt-6 sm:px-6 lg:px-10 lg:pt-10">{children}</main>
       </div>
+      <MobileNav />
     </div>
   );
 }
 
 function Brand() {
   return (
-    <div className="flex items-center gap-2.5 px-5 py-5">
-      <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-        <Wallet className="size-4.5" />
+    <div className="flex items-center gap-3 px-6 py-8">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <Wallet className="size-5" />
       </span>
       <div className="leading-tight">
-        <p className="text-sm font-bold">Meu Financeiro</p>
-        <p className="text-xs text-muted-foreground">Metical (MT)</p>
+        <p className="text-base font-bold">Meu Financeiro</p>
+        <p className="mt-1 text-xs text-muted-foreground">Metical (MT)</p>
       </div>
     </div>
   );
@@ -130,14 +133,15 @@ function NavList({ onNavigate }: { onNavigate: () => void }) {
               key={item.to}
               to={item.to}
               onClick={onNavigate}
+              aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  ? "bg-accent text-accent-foreground"
                   : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
               )}
             >
-              <item.icon className="size-4" />
+               <item.icon className="size-4 shrink-0" />
               {item.label}
             </Link>
           );
@@ -156,6 +160,26 @@ function NavList({ onNavigate }: { onNavigate: () => void }) {
         )}
       </nav>
     </div>
+  );
+}
+
+function MobileNav() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const items = [NAV[0], NAV[1], NAV[2], NAV[5]];
+  return (
+    <nav aria-label="Navegação principal" className="mobile-nav fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-surface/95 px-2 pt-2 backdrop-blur lg:hidden">
+      {items.map((item) => {
+        const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
+        return (
+          <Button key={item.to} asChild variant="ghost" className={cn("h-14 min-w-0 flex-col gap-1 rounded-lg px-1 text-[11px]", active ? "bg-accent text-accent-foreground" : "text-muted-foreground")}>
+            <Link to={item.to} aria-current={active ? "page" : undefined}>
+              <item.icon className="size-5" />
+              <span>{item.to === "/" ? "Início" : item.label}</span>
+            </Link>
+          </Button>
+        );
+      })}
+    </nav>
   );
 }
 
