@@ -631,7 +631,7 @@ function AccountSelect({ value, onChange }: { value: string; onChange: (v: strin
   );
 }
 
-function PhotoPicker({ file, onFile, existing }: { file: File | null; onFile: (f: File | null) => void; existing?: string | null }) {
+function PhotoPicker({ file, onFile, existing }: { file: File | null; onFile: (f: File | null) => void; existing?: string | null | undefined }) {
   const { can } = usePlan();
   if (!can("photos")) {
     return (

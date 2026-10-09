@@ -136,8 +136,8 @@ function GoalDialog({ state, onClose }: { state: { open: boolean; goal?: Savings
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const t = Number(target.replace(",", "."));
-    if (!name.trim()) return toast.error("Indique o nome da meta.");
-    if (!Number.isFinite(t) || t <= 0) return toast.error("Indique o valor alvo.");
+    if (!name.trim()) { toast.error("Indique o nome da meta."); return; }
+    if (!Number.isFinite(t) || t <= 0) { toast.error("Indique o valor alvo."); return; }
     await save.mutateAsync({
       id: g?.id, name: name.trim(), emoji: emoji || "🎯", target_amount: t,
       saved_amount: Number(savedAmt.replace(",", ".")) || 0, target_date: date || null,
