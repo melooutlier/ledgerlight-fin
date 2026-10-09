@@ -24,9 +24,9 @@ export function PeriodPicker({
   onTo: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="period-picker flex min-w-0 flex-wrap items-center gap-2">
       <Select value={value} onValueChange={(v) => onChange(v as PeriodKey)}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-full sm:w-[180px]" aria-label="Período">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -37,17 +37,19 @@ export function PeriodPicker({
         </SelectContent>
       </Select>
       {value === "custom" && (
-        <div className="flex items-center gap-2">
+        <div className="grid min-w-0 w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:w-auto">
           <Input
             type="date"
-            className="w-[150px]"
+            className="min-w-0 w-full sm:w-[150px]"
+            aria-label="Data inicial"
             value={from}
             onChange={(e) => onFrom(e.target.value)}
           />
           <span className="text-muted-foreground">até</span>
           <Input
             type="date"
-            className="w-[150px]"
+            className="min-w-0 w-full sm:w-[150px]"
+            aria-label="Data final"
             value={to}
             onChange={(e) => onTo(e.target.value)}
           />

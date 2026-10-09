@@ -25,13 +25,13 @@ export function StatCard({
           : "text-foreground";
 
   return (
-    <div className="rounded-xl border bg-card p-4 sm:p-5">
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</p>
-        {Icon && <Icon className="size-4 text-muted-foreground" />}
+    <div className={cn("stat-card min-w-0 rounded-lg border bg-card p-5 sm:p-6", tone === "accent" && "stat-card-accent")}>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+        <p className="text-xs font-semibold text-muted-foreground">{label}</p>
+        {Icon && <span className="stat-icon flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted"><Icon className="size-4 text-muted-foreground" /></span>}
       </div>
-      <p className={cn("tnum mt-3 text-xl font-bold sm:text-2xl", toneClass)}>{money(value)}</p>
-      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+      <p className={cn("stat-value tnum mt-4 break-words text-2xl font-bold", toneClass)}>{money(value)}</p>
+      {hint && <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{hint}</p>}
     </div>
   );
 }
