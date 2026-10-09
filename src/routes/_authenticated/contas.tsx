@@ -203,9 +203,13 @@ function TransferDialog({ open, onClose, accounts }: { open: boolean; onClose: (
     if (!from || !to || from === to) { toast.error("Escolha duas contas diferentes."); return; }
     if (!Number.isFinite(v) || v <= 0) { toast.error("Indique um valor válido."); return; }
     const n = (id: string) => accounts.find((a) => a.id === id)?.name ?? "";
-    await transfer.mutateAsync({ from, to, amount: v, date, description: `Transferência ${n(from)} → ${n(to)}` });
-    toast.success("Transferência registada.");
-    onClose();
+    try {
+      await transfer.mutateAsync({ from, to, amount: v, date, description: `Transferência ${n(from)} → ${n(to)}` });
+      toast.success("Transferência registada.");
+      onClose();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Não foi possível transferir.");
+    }
   }
 
   return (

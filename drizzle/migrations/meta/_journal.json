@@ -8,6 +8,13 @@
       "when": 1791356505979,
       "tag": "0000_accounts_savings_plans_admin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791553527522,
+      "tag": "0001_allow_transfer_types",
+      "breakpoints": true
     }
   ]
 }
