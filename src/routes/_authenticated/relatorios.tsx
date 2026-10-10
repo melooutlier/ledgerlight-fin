@@ -19,7 +19,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useCategories, useTransactions } from "@/lib/data";
+import { useCategories, useTransactions, usePlan, useCurrentUser } from "@/lib/data";
+import { Button } from "@/components/ui/button";
+import { UpgradeButton } from "@/components/upgrade-notice";
+import { exportMonthCSV, printMonthReport } from "@/lib/report-export";
 import { dateLabel, money, monthLabel, num, shortMonth } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/relatorios")({
@@ -38,6 +41,8 @@ export const Route = createFileRoute("/_authenticated/relatorios")({
 function ReportsPage() {
   const { data: transactions = [] } = useTransactions();
   const { data: categories = [] } = useCategories();
+  const { can } = usePlan();
+  const { data: user } = useCurrentUser();
 
   const now = new Date();
   const [year, setYear] = useState(String(now.getFullYear()));
@@ -93,7 +98,14 @@ function ReportsPage() {
 
   return (
     <div>
-      <PageHeader title="Relatórios" subtitle={monthLabel(`${prefix}-01`)} />
+      <PageHeader title="Relatórios" subtitle={monthLabel(`${prefix}-01`)} action={
+        can("export") ? (
+          <div className="flex gap-2">
+            <Button size="sm" onClick={() => printMonthReport({ prefix, rows: monthRows, categories, owner: user?.email ?? "" })}>Exportar PDF</Button>
+            <Button size="sm" variant="outline" onClick={() => exportMonthCSV(prefix, monthRows, categories)}>Excel (CSV)</Button>
+          </div>
+        ) : <UpgradeButton size="sm" variant="outline">🔒 Exportar relatório</UpgradeButton>
+      } />
 
       <div className="mb-6 flex flex-wrap items-end gap-3">
         <div className="space-y-2">
