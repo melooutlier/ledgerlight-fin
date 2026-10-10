@@ -14,6 +14,7 @@ import {
 import { useAccounts, useAdvances, useCategories, useLoanPayments, useLoans, useTransactions } from "@/lib/data";
 import { emojiFor } from "@/lib/emoji";
 import { dateLabel, money, num } from "@/lib/format";
+import { fmtMoney, usePrivacy } from "@/lib/privacy";
 import { buildPeriod, inPeriod, type PeriodKey } from "@/lib/period";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,7 @@ const KIND_LABEL: Record<Kind, string> = {
 };
 
 function MovementsPage() {
+  const hidden = usePrivacy();
   const [key, setKey] = useState<PeriodKey>("this_month");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -127,6 +129,16 @@ function MovementsPage() {
       (kind === "all" || i.kind === kind) &&
       (search.trim() === "" || i.title.toLowerCase().includes(search.trim().toLowerCase())),
   );
+
+  const groups = useMemo(() => {
+    const map = new Map<string, typeof filtered>();
+    for (const i of filtered) {
+      const rows = map.get(i.date);
+      if (rows) rows.push(i);
+      else map.set(i.date, [i]);
+    }
+    return [...map.entries()];
+  }, [filtered]);
 
   return (
     <div>
