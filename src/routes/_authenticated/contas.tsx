@@ -1,3 +1,4 @@
+import { UpgradeButton } from "@/components/upgrade-notice";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeftRight, Pencil, Plus, Trash2 } from "lucide-react";
@@ -72,7 +73,7 @@ function AccountsPage() {
 
       {atLimit && !can("multi_accounts") && (
         <p className="mb-4 rounded-lg border border-dashed px-4 py-3 text-sm text-muted-foreground">
-          Tem M-Pesa, e-Mola e banco? O plano <Link to="/planos" className="font-medium text-foreground underline">Pessoal Avançado</Link> permite contas ilimitadas e transferências.
+          🔒 Tem M-Pesa, e-Mola e banco? O plano Pessoal Avançado permite contas ilimitadas e transferências.{" "}<UpgradeButton size="sm" variant="outline" className="ml-2">Fazer upgrade</UpgradeButton>
         </p>
       )}
 
