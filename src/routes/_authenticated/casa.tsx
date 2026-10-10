@@ -38,7 +38,7 @@ function HousePage() {
   const day = new Date().getDate();
 
   if (isLoading) return null;
-  if (!can("household")) return (<><PageHeader title="Casa" /><UpgradeNotice plan="casa" what="Gestão das contas fixas da casa" /></>);
+  if (!can("household")) return (<><PageHeader title="Casa" /><UpgradeNotice plan="avancado" what="Gestão das contas fixas da casa" /></>);
 
   const total = bills.reduce((s, b) => s + num(b.amount), 0);
   const paid = bills.filter((b) => b.last_paid_month === month).reduce((s, b) => s + num(b.amount), 0);

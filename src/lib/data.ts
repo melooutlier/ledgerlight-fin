@@ -536,8 +536,10 @@ export function usePlan() {
       const { data } = await supabase.from("subscriptions").select("*").eq("user_id", user_id).maybeSingle();
       return data;
     },
+    refetchInterval: 30000,
+    refetchOnWindowFocus: true,
   });
-  const plan: PlanId = admin.data ? "casa" : effectivePlan(sub.data, todayISO());
+  const plan: PlanId = admin.data ? "avancado" : effectivePlan(sub.data, todayISO());
   return {
     plan,
     subscription: sub.data,
@@ -572,6 +574,9 @@ export function useUpdateSubscription() {
       const { error } = await supabase.from("subscriptions").update(rest).eq("user_id", user_id);
       if (error) throw error;
     },
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ["admin-users"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["admin-users"] });
+      void qc.invalidateQueries({ queryKey: ["my-subscription"] });
+    },
   });
 }

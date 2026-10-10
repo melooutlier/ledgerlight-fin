@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAdminUsers, useIsAdmin, useUpdateSubscription, type Subscription } from "@/lib/data";
 import { dateLabel, money, todayISO } from "@/lib/format";
-import { PLANS, effectivePlan, type PlanId } from "@/lib/plans";
+import { PLANS, PLAN_IDS, effectivePlan, type PlanId } from "@/lib/plans";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   staticData: { sitemap: false },
@@ -32,20 +32,19 @@ function AdminPage() {
   if (!isAdmin) return <p className="p-6 text-sm text-muted-foreground">Esta área é só para o administrador.</p>;
 
   const today = todayISO();
-  const counts: Record<PlanId, number> = { pessoal: 0, avancado: 0, casa: 0 };
+  const counts: Record<PlanId, number> = { pessoal: 0, avancado: 0 };
   for (const u of users) counts[effectivePlan(u.sub, today)]++;
-  const revenue = counts.avancado * PLANS.avancado.price + counts.casa * PLANS.casa.price;
+  const revenue = counts.pessoal * PLANS.pessoal.price + counts.avancado * PLANS.avancado.price;
   const term = search.trim().toLowerCase();
   const list = users.filter((u) => !term || (u.profile.email ?? "").toLowerCase().includes(term) || (u.profile.display_name ?? "").toLowerCase().includes(term));
 
   return (
     <div>
       <PageHeader title="Administração" subtitle="Painel do dono" />
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Utilizadores" value={String(users.length)} />
         <Stat label="Pessoal" value={String(counts.pessoal)} />
         <Stat label="Avançado" value={String(counts.avancado)} />
-        <Stat label="Casa" value={String(counts.casa)} />
         <Stat label="Receita mensal estimada" value={money(revenue)} />
       </div>
       <Input placeholder="Pesquisar por nome ou email…" className="mb-3 max-w-sm" value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -75,7 +74,7 @@ function addDays(days: number) {
 
 function UserRow({ userId, name, email, joined, sub }: { userId: string; name: string | null; email: string | null; joined: string; sub: Subscription | null }) {
   const update = useUpdateSubscription();
-  const [plan, setPlan] = useState(sub?.plan ?? "pessoal");
+  const [plan, setPlan] = useState(sub?.plan === "casa" ? "avancado" : (sub?.plan ?? "pessoal"));
   const [status, setStatus] = useState(sub?.status ?? "active");
   const [expires, setExpires] = useState(sub?.expires_at ?? "");
   const eff = effectivePlan(sub, todayISO());
@@ -84,7 +83,7 @@ function UserRow({ userId, name, email, joined, sub }: { userId: string; name: s
     const p = next?.plan ?? plan;
     const e = next?.expires ?? expires;
     try {
-      await update.mutateAsync({ user_id: userId, plan: p, status, expires_at: p === "pessoal" ? null : e || null });
+      await update.mutateAsync({ user_id: userId, plan: p, status, expires_at: e || null });
       toast.success("Plano actualizado.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não foi possível actualizar.");
@@ -104,7 +103,7 @@ function UserRow({ userId, name, email, joined, sub }: { userId: string; name: s
       <div className="flex flex-wrap items-center gap-2">
         <Select value={plan} onValueChange={setPlan}>
           <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
-          <SelectContent>{(Object.keys(PLANS) as PlanId[]).map((p) => <SelectItem key={p} value={p}>{PLANS[p].name}</SelectItem>)}</SelectContent>
+          <SelectContent>{PLAN_IDS.map((p) => <SelectItem key={p} value={p}>{PLANS[p].name}</SelectItem>)}</SelectContent>
         </Select>
         <Select value={status} onValueChange={setStatus}>
           <SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger>

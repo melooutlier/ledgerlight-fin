@@ -1,3 +1,4 @@
+import { UpgradeButton } from "@/components/upgrade-notice";
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import {
@@ -635,9 +636,10 @@ function PhotoPicker({ file, onFile, existing }: { file: File | null; onFile: (f
   const { can } = usePlan();
   if (!can("photos")) {
     return (
-      <p className="rounded-lg border border-dashed px-3 py-2 text-xs text-muted-foreground">
-        📷 Fotos de comprovativos e compras estão disponíveis a partir do plano Pessoal Avançado.
-      </p>
+      <div className="flex items-center justify-between gap-2 rounded-lg border border-dashed px-3 py-2 text-xs text-muted-foreground">
+        <span>🔒 Fotos de comprovativos: actualize para o plano Pessoal Avançado.</span>
+        <UpgradeButton size="sm" variant="outline">Upgrade</UpgradeButton>
+      </div>
     );
   }
   return (
