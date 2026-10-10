@@ -16,6 +16,8 @@ import {
   Landmark,
   Home,
   Crown,
+  Eye,
+  EyeOff,
   Shield,
   Coins,
   Target,
@@ -32,6 +34,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { MovementsProvider, useMovements } from "@/components/movements";
 import { cn } from "@/lib/utils";
+import { setPrivacy, usePrivacy } from "@/lib/privacy";
 import { useIsAdmin } from "@/lib/data";
 
 const NAV = [
@@ -90,7 +93,8 @@ function Shell({ children }: { children: ReactNode }) {
           </Sheet>
           <span className="truncate text-sm font-bold">Meu Financeiro</span>
           </div>
-          <div className="shrink-0">
+          <div className="flex shrink-0 items-center gap-1">
+            <PrivacyToggle />
             <QuickAdd compact />
           </div>
         </header>
@@ -187,6 +191,9 @@ function Footer() {
   const navigate = useNavigate();
   return (
     <div className="border-t p-3">
+      <div className="pb-1">
+        <PrivacyToggle wide />
+      </div>
       <Button
         variant="ghost"
         className="w-full justify-start gap-3 text-muted-foreground"
@@ -199,6 +206,23 @@ function Footer() {
         Terminar sessão
       </Button>
     </div>
+  );
+}
+
+function PrivacyToggle({ wide = false }: { wide?: boolean }) {
+  const hidden = usePrivacy();
+  return (
+    <Button
+      variant="ghost"
+      size={wide ? "default" : "icon"}
+      aria-label={hidden ? "Mostrar saldos" : "Ocultar saldos"}
+      title={hidden ? "Mostrar saldos" : "Ocultar saldos"}
+      className={cn(wide ? "w-full justify-start gap-3 text-muted-foreground" : "text-muted-foreground")}
+      onClick={() => setPrivacy(!hidden)}
+    >
+      {hidden ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
+      {wide && (hidden ? "Mostrar saldos" : "Ocultar saldos")}
+    </Button>
   );
 }
 
