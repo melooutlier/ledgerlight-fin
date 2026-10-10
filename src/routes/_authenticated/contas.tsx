@@ -23,6 +23,7 @@ import {
   type Account,
 } from "@/lib/data";
 import { money, todayISO } from "@/lib/format";
+import { fmtMoney, usePrivacy } from "@/lib/privacy";
 
 export const Route = createFileRoute("/_authenticated/contas")({
   staticData: { sitemap: false },
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/_authenticated/contas")({
 });
 
 function AccountsPage() {
+  const hidden = usePrivacy();
   const { data: accounts = [] } = useAccounts();
   const { data: txs = [] } = useTransactions();
   const { data: payments = [] } = useLoanPayments();
@@ -53,7 +55,7 @@ function AccountsPage() {
     <div>
       <PageHeader
         title="Contas e carteiras"
-        subtitle={`Total em todas as contas: ${money(total)}`}
+        subtitle={`Total em todas as contas: ${fmtMoney(total, hidden)}`}
         action={
           <div className="flex gap-2">
             {can("transfers") && accounts.length > 1 && (
@@ -111,7 +113,7 @@ function AccountsPage() {
                 </Button>
               </div>
             </div>
-            <p className="tnum mt-4 text-2xl font-bold">{money(balances.get(a.id) ?? 0)}</p>
+            <p className="tnum mt-4 text-2xl font-bold">{fmtMoney(balances.get(a.id) ?? 0, hidden)}</p>
           </div>
         ))}
       </div>
