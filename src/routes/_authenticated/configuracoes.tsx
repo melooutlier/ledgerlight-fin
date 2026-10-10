@@ -33,7 +33,7 @@ function SettingsPage() {
         <div className="rounded-xl border bg-card p-4 sm:p-5">
           <p className="text-sm font-semibold">Conta</p>
           <p className="mt-1 text-sm text-muted-foreground">{user?.email ?? "—"}</p>
-          <AccountForm initialName={(user?.user_metadata?.display_name as string) ?? (user?.user_metadata?.full_name as string) ?? ""} />
+          <AccountForm initialName={(user?.user_metadata?.['display_name'] as string) ?? (user?.user_metadata?.['full_name'] as string) ?? ""} />
         </div>
 
         <div className="rounded-xl border bg-card p-4 sm:p-5">
@@ -82,7 +82,7 @@ function AccountForm({ initialName }: { initialName: string }) {
   const [pw, setPw] = useState("");
   const [busy, setBusy] = useState(false);
   async function save() {
-    if (pw && pw.length < 6) return toast.error("A palavra-passe precisa de pelo menos 6 caracteres.");
+    if (pw && pw.length < 6) { toast.error("A palavra-passe precisa de pelo menos 6 caracteres."); return; }
     setBusy(true);
     try {
       const { data, error } = await supabase.auth.updateUser({ data: { display_name: name.trim() }, ...(pw ? { password: pw } : {}) });
