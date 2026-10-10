@@ -14,6 +14,7 @@ import {
 import { useAccounts, useAdvances, useCategories, useLoanPayments, useLoans, useTransactions } from "@/lib/data";
 import { emojiFor } from "@/lib/emoji";
 import { dateLabel, money, num } from "@/lib/format";
+import { fmtMoney, usePrivacy } from "@/lib/privacy";
 import { buildPeriod, inPeriod, type PeriodKey } from "@/lib/period";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,7 @@ const KIND_LABEL: Record<Kind, string> = {
 };
 
 function MovementsPage() {
+  const hidden = usePrivacy();
   const [key, setKey] = useState<PeriodKey>("this_month");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -128,6 +130,16 @@ function MovementsPage() {
       (search.trim() === "" || i.title.toLowerCase().includes(search.trim().toLowerCase())),
   );
 
+  const groups = useMemo(() => {
+    const map = new Map<string, typeof filtered>();
+    for (const i of filtered) {
+      const rows = map.get(i.date);
+      if (rows) rows.push(i);
+      else map.set(i.date, [i]);
+    }
+    return [...map.entries()];
+  }, [filtered]);
+
   return (
     <div>
       <PageHeader title="Movimentações" subtitle={period.label} />
@@ -155,44 +167,51 @@ function MovementsPage() {
         />
       </div>
 
-      <div className="divide-y rounded-xl border bg-card">
-        {filtered.length === 0 && (
-          <p className="p-6 text-center text-sm text-muted-foreground">
-            Sem movimentações neste período.
+      {filtered.length === 0 && (
+        <p className="rounded-xl border bg-card p-6 text-center text-sm text-muted-foreground">
+          Sem movimentações neste período.
+        </p>
+      )}
+
+      {groups.map(([date, rows]) => (
+        <div key={date} className="mb-4">
+          <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {dateLabel(date)}
           </p>
-        )}
-        {filtered.map((i) => (
-          <div key={i.id} className="flex items-center justify-between gap-3 p-4">
-            <div className="flex min-w-0 items-center gap-3">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-xl">{i.emoji}</span>
-              <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="truncate font-medium">{i.title}</p>
-                <Badge variant="secondary">{KIND_LABEL[i.kind]}</Badge>
-                {i.demo && <Badge variant="outline">demo</Badge>}
-                {i.pending && <Badge variant="outline">por confirmar</Badge>}
+          <div className="divide-y rounded-xl border bg-card">
+            {rows.map((i) => (
+              <div key={i.id} className="flex items-center justify-between gap-3 p-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-xl">{i.emoji}</span>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate font-medium">{i.title}</p>
+                      <Badge variant="secondary">{KIND_LABEL[i.kind]}</Badge>
+                      {i.demo && <Badge variant="outline">demo</Badge>}
+                      {i.pending && <Badge variant="outline">por confirmar</Badge>}
+                    </div>
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                      {i.sub ? i.sub : dateLabel(i.date)}
+                    </p>
+                  </div>
+                </div>
+                <span
+                  className={cn(
+                    "tnum shrink-0 font-semibold",
+                    i.kind === "income" || i.kind === "loan_payment"
+                      ? "text-positive"
+                      : i.kind === "expense"
+                        ? "text-destructive"
+                        : "text-foreground",
+                  )}
+                >
+                  {fmtMoney(i.amount, hidden)}
+                </span>
               </div>
-              <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                {dateLabel(i.date)}
-                {i.sub ? ` · ${i.sub}` : ""}
-              </p>
-              </div>
-            </div>
-            <span
-              className={cn(
-                "tnum shrink-0 font-semibold",
-                i.kind === "income" || i.kind === "loan_payment"
-                  ? "text-positive"
-                  : i.kind === "expense"
-                    ? "text-destructive"
-                    : "text-foreground",
-              )}
-            >
-              {money(i.amount)}
-            </span>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   );
 }
