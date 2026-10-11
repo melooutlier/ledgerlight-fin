@@ -30,7 +30,7 @@ import { money, num, shortMonth } from "@/lib/format";
 import { buildPeriod, inPeriod, monthStartISO, type PeriodKey } from "@/lib/period";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/")({
+export const Route = createFileRoute("/_authenticated/inicio")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [

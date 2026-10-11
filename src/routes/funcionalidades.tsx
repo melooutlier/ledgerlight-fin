@@ -1,0 +1,7 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PublicShell } from "@/components/public-shell";
+import { MelfyFeatures } from "@/components/melfy-features";
+export const Route = createFileRoute("/funcionalidades")({ staticData: { sitemap: true }, head: () => ({ meta: [{ title: "Funcionalidades — Melfy" }, { name: "description", content: "Conheça as despesas, receitas, carteiras, empréstimos, metas de poupança e relatórios do Melfy." }, { property: "og:title", content: "Funcionalidades — Melfy" }, { property: "og:description", content: "Tudo para organizar a sua vida financeira em meticais." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }), component: FeaturesPage });
+function FeaturesPage() { return <PublicShell><section className="mx-auto max-w-6xl px-5 py-16 sm:px-8"><div className="mb-16 max-w-2xl"><p className="text-xs font-bold uppercase tracking-widest text-primary">A sua vida financeira</p><h1 className="mt-4 text-4xl font-extrabold sm:text-5xl">Tudo no seu lugar.<br /><span className="text-primary">Tudo no Melfy.</span></h1><p className="mt-6 leading-7 text-muted-foreground">Das pequenas compras aos grandes objectivos, acompanhe o seu dinheiro com clareza.</p></div><MelfyFeatures full /><div className="mt-16 border-t pt-10"><Button asChild size="lg"><Link to="/precos">Escolher um plano <ArrowRight /></Link></Button></div></section></PublicShell>; }

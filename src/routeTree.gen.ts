@@ -9,10 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as FuncionalidadesRouteImport } from './routes/funcionalidades'
+import { Route as PrecosRouteImport } from './routes/precos'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdiantamentosRouteImport } from './routes/_authenticated/adiantamentos'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCasaRouteImport } from './routes/_authenticated/casa'
@@ -22,12 +24,18 @@ import { Route as AuthenticatedContasRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
 import { Route as AuthenticatedEmprestimosRouteImport } from './routes/_authenticated/emprestimos'
 import { Route as AuthenticatedEntradasRouteImport } from './routes/_authenticated/entradas'
+import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
 import { Route as AuthenticatedMovimentacoesRouteImport } from './routes/_authenticated/movimentacoes'
 import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authenticated/orcamento'
 import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
 import { Route as AuthenticatedPoupancaRouteImport } from './routes/_authenticated/poupanca'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -37,15 +45,20 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FuncionalidadesRoute = FuncionalidadesRouteImport.update({
+  id: '/funcionalidades',
+  path: '/funcionalidades',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrecosRoute = PrecosRouteImport.update({
+  id: '/precos',
+  path: '/precos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdiantamentosRoute =
   AuthenticatedAdiantamentosRouteImport.update({
@@ -95,6 +108,11 @@ const AuthenticatedEntradasRoute = AuthenticatedEntradasRouteImport.update({
   path: '/entradas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
+  id: '/inicio',
+  path: '/inicio',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMovimentacoesRoute =
   AuthenticatedMovimentacoesRouteImport.update({
     id: '/movimentacoes',
@@ -123,8 +141,10 @@ const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedIndexRoute
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/funcionalidades': typeof FuncionalidadesRoute
+  '/precos': typeof PrecosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/adiantamentos': typeof AuthenticatedAdiantamentosRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -135,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/despesas': typeof AuthenticatedDespesasRoute
   '/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/entradas': typeof AuthenticatedEntradasRoute
+  '/inicio': typeof AuthenticatedInicioRoute
   '/movimentacoes': typeof AuthenticatedMovimentacoesRoute
   '/orcamento': typeof AuthenticatedOrcamentoRoute
   '/planos': typeof AuthenticatedPlanosRoute
@@ -142,7 +163,10 @@ export interface FileRoutesByFullPath {
   '/relatorios': typeof AuthenticatedRelatoriosRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/funcionalidades': typeof FuncionalidadesRoute
+  '/precos': typeof PrecosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/adiantamentos': typeof AuthenticatedAdiantamentosRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -153,17 +177,20 @@ export interface FileRoutesByTo {
   '/despesas': typeof AuthenticatedDespesasRoute
   '/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/entradas': typeof AuthenticatedEntradasRoute
+  '/inicio': typeof AuthenticatedInicioRoute
   '/movimentacoes': typeof AuthenticatedMovimentacoesRoute
   '/orcamento': typeof AuthenticatedOrcamentoRoute
   '/planos': typeof AuthenticatedPlanosRoute
   '/poupanca': typeof AuthenticatedPoupancaRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
-  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/funcionalidades': typeof FuncionalidadesRoute
+  '/precos': typeof PrecosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/adiantamentos': typeof AuthenticatedAdiantamentosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -174,18 +201,20 @@ export interface FileRoutesById {
   '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
   '/_authenticated/emprestimos': typeof AuthenticatedEmprestimosRoute
   '/_authenticated/entradas': typeof AuthenticatedEntradasRoute
+  '/_authenticated/inicio': typeof AuthenticatedInicioRoute
   '/_authenticated/movimentacoes': typeof AuthenticatedMovimentacoesRoute
   '/_authenticated/orcamento': typeof AuthenticatedOrcamentoRoute
   '/_authenticated/planos': typeof AuthenticatedPlanosRoute
   '/_authenticated/poupanca': typeof AuthenticatedPoupancaRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
-  '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
+    | '/funcionalidades'
+    | '/precos'
     | '/sitemap.xml'
     | '/adiantamentos'
     | '/admin'
@@ -196,6 +225,7 @@ export interface FileRouteTypes {
     | '/despesas'
     | '/emprestimos'
     | '/entradas'
+    | '/inicio'
     | '/movimentacoes'
     | '/orcamento'
     | '/planos'
@@ -203,7 +233,10 @@ export interface FileRouteTypes {
     | '/relatorios'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/auth'
+    | '/funcionalidades'
+    | '/precos'
     | '/sitemap.xml'
     | '/adiantamentos'
     | '/admin'
@@ -214,16 +247,19 @@ export interface FileRouteTypes {
     | '/despesas'
     | '/emprestimos'
     | '/entradas'
+    | '/inicio'
     | '/movimentacoes'
     | '/orcamento'
     | '/planos'
     | '/poupanca'
     | '/relatorios'
-    | '/'
   id:
     | '__root__'
+    | '/'
     | '/_authenticated'
     | '/auth'
+    | '/funcionalidades'
+    | '/precos'
     | '/sitemap.xml'
     | '/_authenticated/adiantamentos'
     | '/_authenticated/admin'
@@ -234,22 +270,32 @@ export interface FileRouteTypes {
     | '/_authenticated/despesas'
     | '/_authenticated/emprestimos'
     | '/_authenticated/entradas'
+    | '/_authenticated/inicio'
     | '/_authenticated/movimentacoes'
     | '/_authenticated/orcamento'
     | '/_authenticated/planos'
     | '/_authenticated/poupanca'
     | '/_authenticated/relatorios'
-    | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  FuncionalidadesRoute: typeof FuncionalidadesRoute
+  PrecosRoute: typeof PrecosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -264,19 +310,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/funcionalidades': {
+      id: '/funcionalidades'
+      path: '/funcionalidades'
+      fullPath: '/funcionalidades'
+      preLoaderRoute: typeof FuncionalidadesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/precos': {
+      id: '/precos'
+      path: '/precos'
+      fullPath: '/precos'
+      preLoaderRoute: typeof PrecosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/': {
-      id: '/_authenticated/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/adiantamentos': {
       id: '/_authenticated/adiantamentos'
@@ -341,6 +394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEntradasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/inicio': {
+      id: '/_authenticated/inicio'
+      path: '/inicio'
+      fullPath: '/inicio'
+      preLoaderRoute: typeof AuthenticatedInicioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/movimentacoes': {
       id: '/_authenticated/movimentacoes'
       path: '/movimentacoes'
@@ -389,12 +449,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
   AuthenticatedEmprestimosRoute: typeof AuthenticatedEmprestimosRoute
   AuthenticatedEntradasRoute: typeof AuthenticatedEntradasRoute
+  AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
   AuthenticatedMovimentacoesRoute: typeof AuthenticatedMovimentacoesRoute
   AuthenticatedOrcamentoRoute: typeof AuthenticatedOrcamentoRoute
   AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
   AuthenticatedPoupancaRoute: typeof AuthenticatedPoupancaRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -407,20 +467,23 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,
   AuthenticatedEmprestimosRoute: AuthenticatedEmprestimosRoute,
   AuthenticatedEntradasRoute: AuthenticatedEntradasRoute,
+  AuthenticatedInicioRoute: AuthenticatedInicioRoute,
   AuthenticatedMovimentacoesRoute: AuthenticatedMovimentacoesRoute,
   AuthenticatedOrcamentoRoute: AuthenticatedOrcamentoRoute,
   AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
   AuthenticatedPoupancaRoute: AuthenticatedPoupancaRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
-  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  FuncionalidadesRoute: FuncionalidadesRoute,
+  PrecosRoute: PrecosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport

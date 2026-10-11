@@ -36,9 +36,10 @@ import { MovementsProvider, useMovements } from "@/components/movements";
 import { cn } from "@/lib/utils";
 import { setPrivacy, usePrivacy } from "@/lib/privacy";
 import { useIsAdmin } from "@/lib/data";
+import { MelfyBrand } from "@/components/melfy-brand";
 
 const NAV = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/inicio", label: "Visão geral", icon: LayoutDashboard },
   { to: "/despesas", label: "Despesas", icon: ArrowDownLeft },
   { to: "/entradas", label: "Entradas", icon: ArrowUpRight },
   { to: "/emprestimos", label: "Empréstimos", icon: HandCoins },
@@ -91,7 +92,7 @@ function Shell({ children }: { children: ReactNode }) {
               </div>
             </SheetContent>
           </Sheet>
-          <span className="truncate text-sm font-bold">Meu Financeiro</span>
+          <Link to="/inicio"><MelfyBrand className="text-lg [&_svg]:size-6" /></Link>
           </div>
           <div className="flex shrink-0 items-center gap-1">
             <PrivacyToggle />
@@ -109,12 +110,9 @@ function Shell({ children }: { children: ReactNode }) {
 function Brand() {
   return (
     <div className="flex items-center gap-3 px-6 py-8">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-        <Wallet className="size-5" />
-      </span>
       <div className="leading-tight">
-        <p className="text-base font-bold">Meu Financeiro</p>
-        <p className="mt-1 text-xs text-muted-foreground">Metical (MT)</p>
+        <Link to="/inicio"><MelfyBrand /></Link>
+        <p className="mt-2 text-xs text-muted-foreground">O seu dinheiro, com clareza.</p>
       </div>
     </div>
   );
@@ -199,7 +197,7 @@ function Footer() {
         className="w-full justify-start gap-3 text-muted-foreground"
         onClick={async () => {
           await supabase.auth.signOut();
-          navigate({ to: "/auth" });
+           navigate({ to: "/auth", search: { mode: "signin", plan: undefined } });
         }}
       >
         <LogOut className="size-4" />

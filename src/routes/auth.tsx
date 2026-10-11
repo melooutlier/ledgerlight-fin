@@ -7,21 +7,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Wallet } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { MelfyBrand } from "@/components/melfy-brand";
+import { PLANS } from "@/lib/plans";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>): { mode: "signin" | "signup"; plan: "pessoal" | "avancado" | undefined } => ({ mode: search.mode === "signup" ? "signup" : "signin", plan: search.plan === "pessoal" || search.plan === "avancado" ? search.plan : undefined }),
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: "Entrar — Meu Financeiro" },
+      { title: "Entrar ou criar conta — Melfy" },
       {
         name: "description",
-        content: "Aceda à sua conta do Meu Financeiro para gerir receitas, despesas e empréstimos.",
+        content: "Aceda à sua conta Melfy para gerir receitas, despesas e empréstimos.",
       },
-      { property: "og:title", content: "Entrar — Meu Financeiro" },
+      { property: "og:title", content: "Entrar ou criar conta — Melfy" },
       {
         property: "og:description",
-        content: "Aceda à sua conta do Meu Financeiro para gerir receitas, despesas e empréstimos.",
+        content: "Crie a sua conta ou entre no Melfy para organizar as suas finanças.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,
@@ -29,7 +35,8 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const search = Route.useSearch();
+  const [mode, setMode] = useState<"signin" | "signup">(search.mode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -38,9 +45,9 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/" });
+      if (data.session) navigate({ to: search.plan ? "/planos" : "/inicio" });
     });
-  }, [navigate]);
+  }, [navigate, search.plan]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -64,14 +71,14 @@ function AuthPage() {
           setCheckEmail(true);
           return;
         }
-        navigate({ to: "/" });
+        navigate({ to: search.plan ? "/planos" : "/inicio" });
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password,
         });
         if (error) throw error;
-        navigate({ to: "/" });
+        navigate({ to: "/inicio" });
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não foi possível continuar.");
@@ -89,21 +96,20 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/" });
+    navigate({ to: "/inicio" });
   }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
-          <span className="flex size-11 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Wallet className="size-5" />
-          </span>
-          <h1 className="mt-4 text-2xl font-bold">Meu Financeiro</h1>
+          <Link to="/"><MelfyBrand className="text-3xl" /></Link>
+          <h1 className="mt-6 text-2xl font-bold">{mode === "signin" ? "Bem-vindo de volta." : "O seu próximo passo."}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Controle as suas entradas, despesas e empréstimos.
           </p>
         </div>
+        {search.plan && mode === "signup" && <p className="mb-5 rounded-lg border bg-accent p-3 text-center text-sm">Plano escolhido: <strong>{PLANS[search.plan].name}</strong> · activado após confirmação do pagamento.</p>}
 
         {checkEmail ? (
           <div className="rounded-xl border bg-card p-6 text-center text-sm">
@@ -171,13 +177,13 @@ function AuthPage() {
 
             <p className="mt-5 text-center text-sm text-muted-foreground">
               {mode === "signin" ? "Ainda não tem conta?" : "Já tem conta?"}{" "}
-              <button
+              <Button variant="link"
                 type="button"
                 className="font-medium text-primary underline-offset-4 hover:underline"
                 onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
               >
                 {mode === "signin" ? "Criar conta" : "Entrar"}
-              </button>
+              </Button>
             </p>
           </div>
         )}

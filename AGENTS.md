@@ -10,6 +10,8 @@
 <!-- LOVABLE:END -->
 
 ## Architecture rules
+- Public discovery lives at `/`, `/funcionalidades` and `/precos`; the protected financial overview lives at `/inicio`; why: visitors can review membership before signing in without exposing private records.
+- Public pricing and payment dialogs consume the shared plan configuration; why: membership prices and payment details stay consistent with authenticated upgrades.
 - Plan gating lives in src/lib/plans.ts (pure, tested) and is read via usePlan(); why: one source of truth for features per plan.
 - Admin rights come only from the user_roles table via has_role(); why: avoid privilege escalation.
 - Receipt photos go to the private "receipts" bucket under <user_id>/ and are shown via signed URLs; why: photos are private.
