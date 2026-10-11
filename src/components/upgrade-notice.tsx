@@ -1,10 +1,11 @@
 import { useState, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
 import { Copy, MessageCircle, Phone, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { money } from "@/lib/format";
-import { PAYMENT, PLANS } from "@/lib/plans";
+import { PAYMENT, PLANS, type PlanId } from "@/lib/plans";
 
 async function copy(value: string) {
   try {
@@ -15,16 +16,16 @@ async function copy(value: string) {
   }
 }
 
-export function PaymentDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
-  const p = PLANS.avancado;
-  const wa = `https://wa.me/258${PAYMENT.contact}?text=${encodeURIComponent("Olá, envio o comprovativo do plano Pessoal Avançado. Email da conta: ")}`;
+export function PaymentDialog({ open, onOpenChange, plan = "avancado", annual = false, signup = false }: { open: boolean; onOpenChange: (o: boolean) => void; plan?: PlanId; annual?: boolean; signup?: boolean }) {
+  const p = PLANS[plan];
+  const wa = `https://wa.me/258${PAYMENT.contact}?text=${encodeURIComponent(`Olá, envio o comprovativo do plano ${p.name} (${annual ? "anual" : "mensal"}) do Melfy. Email da conta: `)}`;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Actualizar para {p.name}</DialogTitle>
+          <DialogTitle>{signup ? "Aderir ao" : "Actualizar para"} {p.name}</DialogTitle>
           <DialogDescription>
-            {money(p.price)}/mês ou {money(p.yearly)}/ano. Pague por um dos métodos abaixo.
+            {signup ? `${money(annual ? p.yearly : p.price)}/${annual ? "ano" : "mês"}` : `${money(p.price)}/mês ou ${money(p.yearly)}/ano`}. Pague por um dos métodos abaixo.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
@@ -55,6 +56,7 @@ export function PaymentDialog({ open, onOpenChange }: { open: boolean; onOpenCha
             <Button asChild><a href={wa} target="_blank" rel="noreferrer"><MessageCircle className="size-4" /> WhatsApp</a></Button>
             <Button asChild variant="outline"><a href={`tel:+258${PAYMENT.contact}`}><Phone className="size-4" /> Ligar</a></Button>
           </div>
+          {signup && <Button asChild variant="outline" className="w-full"><Link to="/auth" search={{ mode: "signup", plan }}>Criar a minha conta Melfy</Link></Button>}
         </div>
       </DialogContent>
     </Dialog>
