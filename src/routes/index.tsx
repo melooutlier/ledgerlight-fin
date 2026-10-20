@@ -32,7 +32,7 @@ function PhoneMock() {
             <div className="flex items-center gap-2"><span className="grid size-7 place-items-center rounded-full bg-destructive text-destructive-foreground"><ArrowUp className="size-3.5" /></span><div><p className="text-muted-foreground">Despesas</p><p className="tnum font-bold text-destructive">6.200</p></div></div>
           </div>
         </div>
-        {[["🍔", "Almoço", "-350 MT"], ["📱", "Recarga M-Pesa", "-200 MT"], ["💼", "Salário", "+20.000 MT"]].map(([e, n, v]) => <div key={n} className="flex items-center gap-3 rounded-2xl border bg-card p-3 text-sm"><span className="text-lg">{e}</span><span className="flex-1 font-medium">{n}</span><span className={v.startsWith("+") ? "tnum font-bold text-positive" : "tnum font-bold"}>{v}</span></div>)}
+        {([["🍔", "Almoço", "-350 MT"], ["📱", "Recarga M-Pesa", "-200 MT"], ["💼", "Salário", "+20.000 MT"]] as const).map(([e, n, v]) => <div key={n} className="flex items-center gap-3 rounded-2xl border bg-card p-3 text-sm"><span className="text-lg">{e}</span><span className="flex-1 font-medium">{n}</span><span className={v.startsWith("+") ? "tnum font-bold text-positive" : "tnum font-bold"}>{v}</span></div>)}
       </div>
     </div>
   </div>;
