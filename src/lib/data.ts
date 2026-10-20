@@ -395,7 +395,7 @@ export const ACCOUNT_TYPES: Record<string, { label: string; emoji: string }> = {
 export function useSaveAccount() {
   const invalidate = useInvalidateAll();
   return useMutation({
-    mutationFn: async (input: { id?: string | undefined; name: string; type: string; initial_balance: number; is_savings: boolean }) => {
+    mutationFn: async (input: { id?: string | undefined; name: string; type: string; initial_balance: number; is_savings: boolean; institution?: string; account_number?: string | null; account_color?: string; account_icon?: string }) => {
       const user_id = await uid();
       if (input.id) {
         const { id, ...rest } = input;
