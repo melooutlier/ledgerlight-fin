@@ -193,3 +193,46 @@ input[type="date"]::-webkit-date-and-time-value { text-align: left; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+
+/* Refinamento visual inspirado em dashboards financeiros modernos. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--primary) 18%, transparent);
+  }
+}
+
+.stat-card,
+.rounded-xl.border.bg-card,
+.app-dialog [role="dialog"] {
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stat-card:hover {
+    box-shadow: 0 8px 24px oklch(0.17 0 0 / 7%);
+    transform: translateY(-1px);
+  }
+
+  .app-main .rounded-xl.border.bg-card:hover {
+    border-color: color-mix(in oklch, var(--primary) 28%, var(--border));
+  }
+}
+
+.app-main {
+  animation: content-enter 220ms ease-out both;
+}
+
+@keyframes content-enter {
+  from { opacity: 0.75; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-main { animation: none; }
+}
