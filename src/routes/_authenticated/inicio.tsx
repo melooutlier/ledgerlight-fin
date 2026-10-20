@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Bar,
   BarChart,
@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ArrowDownLeft, ArrowUpRight, HandCoins, Wallet } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, HandCoins, Wallet, ArrowRight, ReceiptText, Tags, TrendingUp } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { PeriodPicker } from "@/components/period-picker";
 import { StatCard } from "@/components/stat-card";
@@ -26,7 +26,7 @@ import {
   useLoans,
   useTransactions,
 } from "@/lib/data";
-import { money, num, shortMonth } from "@/lib/format";
+import { money, num, shortMonth, dateLabel } from "@/lib/format";
 import { buildPeriod, inPeriod, monthStartISO, type PeriodKey } from "@/lib/period";
 import { cn } from "@/lib/utils";
 
@@ -66,6 +66,20 @@ function Dashboard() {
   const income = inRange.filter((t) => t.type === "income").reduce((s, t) => s + num(t.amount), 0);
   const expense = inRange.filter((t) => t.type === "expense").reduce((s, t) => s + num(t.amount), 0);
   const receivable = loans.reduce((s, l) => s + loanSummary(l, payments).pending, 0);
+  const recentTransactions = [...inRange]
+    .sort((a, b) => b.tx_date.localeCompare(a.tx_date))
+    .slice(0, 5);
+  const expenseCategories = categories
+    .filter((category) => category.kind === "expense")
+    .map((category) => ({
+      ...category,
+      total: inRange
+        .filter((transaction) => transaction.type === "expense" && transaction.category_id === category.id)
+        .reduce((sum, transaction) => sum + num(transaction.amount), 0),
+    }))
+    .filter((category) => category.total > 0)
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5);
 
   const budget = budgets.find((b) => b.month === monthStartISO());
   const alerts = buildAlerts({
@@ -141,23 +155,114 @@ function Dashboard() {
         </div>
       )}
 
-      <div className="mt-6 rounded-xl border bg-card p-4 sm:p-5">
-        <p className="mb-4 text-sm font-semibold">Entradas vs Despesas vs Saldo</p>
-        <div className="h-[280px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chart}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
-              <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} />
-              <YAxis tickLine={false} axisLine={false} fontSize={12} width={70} />
-              <Tooltip formatter={(v: number | string) => money(Number(v))} />
-              <Legend />
-              <Bar dataKey="Entradas" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Despesas" fill="var(--color-chart-2)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Saldo" fill="var(--color-chart-3)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+      <div className="mt-8 grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(280px,1fr)]">
+        <section className="min-w-0 rounded-2xl border bg-card p-4 sm:p-6">
+          <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary"><TrendingUp className="size-4" /></span>
+                <h2 className="font-semibold">Evolução financeira</h2>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">Compara entradas, despesas e saldo dos últimos seis meses.</p>
+            </div>
+          </div>
+          <div className="h-[280px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chart} margin={{ top: 8, right: 4, left: -12, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.25} />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={11} />
+                <YAxis tickLine={false} axisLine={false} fontSize={11} width={64} />
+                <Tooltip formatter={(v: number | string) => money(Number(v))} />
+                <Legend iconType="circle" iconSize={8} />
+                <Bar dataKey="Entradas" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} maxBarSize={24} />
+                <Bar dataKey="Despesas" fill="var(--color-chart-2)" radius={[4, 4, 0, 0]} maxBarSize={24} />
+                <Bar dataKey="Saldo" fill="var(--color-chart-3)" radius={[4, 4, 0, 0]} maxBarSize={24} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        <section className="min-w-0 rounded-2xl border bg-card p-4 sm:p-6">
+          <div className="mb-5 flex items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-muted"><Tags className="size-4" /></span>
+                <h2 className="font-semibold">Maiores despesas</h2>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">Por categoria neste período.</p>
+            </div>
+            <Link to="/categorias" className="text-sm font-medium text-primary hover:underline">Ver todas</Link>
+          </div>
+          {expenseCategories.length === 0 ? (
+            <div className="flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed px-4 text-center">
+              <Tags className="mb-2 size-5 text-muted-foreground" />
+              <p className="text-sm font-medium">Ainda sem despesas por categoria</p>
+              <p className="mt-1 text-xs text-muted-foreground">Regista uma despesa para veres aqui a distribuição.</p>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {expenseCategories.map((category) => {
+                const percent = expense > 0 ? Math.min(100, (category.total / expense) * 100) : 0;
+                return (
+                  <div key={category.id} className="space-y-2">
+                    <div className="flex items-center justify-between gap-3 text-sm">
+                      <span className="min-w-0 truncate font-medium">{category.name}</span>
+                      <span className="tnum shrink-0 text-muted-foreground">{money(category.total)}</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-muted">
+                      <div className="h-full rounded-full bg-primary transition-[width]" style={{ width: `${percent}%` }} />
+                    </div>
+                    <p className="text-right text-xs text-muted-foreground">{percent.toLocaleString("pt-PT", { maximumFractionDigits: 1 })}% das despesas</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
       </div>
+
+      <section className="mt-5 rounded-2xl border bg-card p-4 sm:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-muted"><ReceiptText className="size-4" /></span>
+              <h2 className="font-semibold">Movimentações recentes</h2>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">Os últimos registos do período selecionado.</p>
+          </div>
+          <Link to="/movimentacoes" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+            Ver movimentações <ArrowRight className="size-4" />
+          </Link>
+        </div>
+        {recentTransactions.length === 0 ? (
+          <div className="flex min-h-28 flex-col items-center justify-center rounded-xl border border-dashed px-4 text-center">
+            <ReceiptText className="mb-2 size-5 text-muted-foreground" />
+            <p className="text-sm font-medium">Nenhuma movimentação neste período</p>
+            <p className="mt-1 text-xs text-muted-foreground">Usa “Nova movimentação” para registar a primeira.</p>
+          </div>
+        ) : (
+          <div className="divide-y">
+            {recentTransactions.map((transaction) => {
+              const categoryName = categories.find((category) => category.id === transaction.category_id)?.name ?? "Sem categoria";
+              const isIncome = transaction.type === "income";
+              return (
+                <div key={transaction.id} className="flex min-w-0 items-center gap-3 py-3">
+                  <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", isIncome ? "bg-positive/10 text-positive" : "bg-destructive/10 text-destructive")}>
+                    {isIncome ? <ArrowUpRight className="size-4" /> : <ArrowDownLeft className="size-4" />}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{transaction.description || (isIncome ? "Entrada" : "Despesa")}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{categoryName} · {dateLabel(transaction.tx_date)}</p>
+                  </div>
+                  <p className={cn("tnum shrink-0 text-sm font-semibold", isIncome ? "text-positive" : "text-foreground")}>
+                    {isIncome ? "+" : "−"}{money(num(transaction.amount))}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
