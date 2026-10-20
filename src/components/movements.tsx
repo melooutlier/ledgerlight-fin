@@ -174,6 +174,7 @@ function TransactionDialog({
   }
 
   return (
+    <>
     <Dialog open={state.open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -344,6 +345,7 @@ function TransactionDialog({
         </form>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
 
