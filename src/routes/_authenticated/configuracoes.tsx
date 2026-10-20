@@ -16,7 +16,7 @@ const THEME_KEY = "melfy-theme";
 
 function applyTheme(theme: ThemeChoice) {
   if (typeof document === "undefined") return;
-  document.documentElement.dataset.theme = theme;
+  document.documentElement.dataset["theme"] = theme;
   document.documentElement.classList.toggle("dark", theme === "dark");
 }
 
