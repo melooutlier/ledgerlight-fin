@@ -65,8 +65,12 @@ const ACCOUNT_KIND_OPTIONS = [
 
 function InstitutionMark({ institution, size = "md" }: { institution: string; size?: "sm" | "md" | "lg" }) {
   const item = MOZAMBIQUE_INSTITUTIONS.find((bank) => bank.id === institution) ?? MOZAMBIQUE_INSTITUTIONS[12];
-  const dimensions = size === "lg" ? "size-14 rounded-2xl text-sm" : size === "sm" ? "size-9 rounded-xl text-[10px]" : "size-11 rounded-2xl text-xs";
-  return <span title={item.name} aria-label={item.name} className={"inline-flex shrink-0 items-center justify-center font-extrabold tracking-tight shadow-sm " + dimensions} style={{ backgroundColor: item.color, color: item.ink }}>{item.mark}</span>;
+  const dimensions = size === "lg" ? "size-14 rounded-2xl" : size === "sm" ? "size-9 rounded-xl" : "size-11 rounded-2xl";
+  const logoFiles: Record<string, string> = { mpesa: "mpesa", emola: "emola", mkesh: "mkesh", bim: "millennium-bim", bci: "bci", standard: "standard-bank", nedbank: "nedbank", absa: "absa", moza: "moza-banco", fnb: "fnb", access: "access-bank", cash: "dinheiro-carteira" };
+  const logo = logoFiles[institution];
+  return <span title={item.name} aria-label={item.name} className={"inline-flex shrink-0 items-center justify-center overflow-hidden " + dimensions} style={{ backgroundColor: item.color }}>
+    {logo ? <img src={"/banks/" + logo + ".svg"} alt={item.name} className="size-full object-cover" /> : <span className="font-extrabold" style={{ color: item.ink }}>{item.mark}</span>}
+  </span>;
 }
 
 function AccountsPage() {
@@ -169,7 +173,7 @@ export function AccountDialog({
   const [type, setType] = useState(a?.type ?? "carteira_movel");
   const [initial, setInitial] = useState(a ? String(a.initial_balance) : "0");
   const [isSavings, setIsSavings] = useState(a?.is_savings ?? presetSavings);
-  const [institution, setInstitution] = useState(a?.institution ?? "mpesa");
+  const [institution, setInstitution] = useState(a?.institution ?? (a?.type === "emola" ? "emola" : a?.type === "mkesh" ? "mkesh" : a?.type === "dinheiro" ? "cash" : a?.type === "banco" ? "other" : "mpesa"));
   const [accountNumber, setAccountNumber] = useState(a?.account_number ?? "");
   const [color, setColor] = useState(a?.account_color ?? "#e31b36");
   const [icon, setIcon] = useState(a?.account_icon ?? "wallet");
