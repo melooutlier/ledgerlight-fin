@@ -322,8 +322,9 @@ function TransactionDialog({
               return;
             }
             try {
-              await saveCategory.mutateAsync({ name, kind: type });
-              toast.success("Categoria criada. Já pode selecioná-la na lista.");
+              const createdCategoryId = await saveCategory.mutateAsync({ name, kind: type });
+              setCategoryId(createdCategoryId);
+              toast.success("Categoria criada e selecionada.");
               setCategoryDialogOpen(false);
             } catch (err) {
               toast.error(err instanceof Error ? err.message : "Não foi possível criar a categoria.");
