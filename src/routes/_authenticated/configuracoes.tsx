@@ -66,7 +66,7 @@ function SettingsPage() {
             className="mt-3"
             onClick={async () => {
               await supabase.auth.signOut();
-              navigate({ to: "/auth" });
+              navigate({ to: "/auth", search: { mode: "signin", plan: undefined } });
             }}
           >
             Terminar sessão

@@ -129,7 +129,7 @@ function NavList({ onNavigate }: { onNavigate: () => void }) {
       </div>
       <nav className="space-y-0.5 pb-4">
         {NAV.map((item) => {
-          const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
+          const active = pathname.startsWith(item.to);
           return (
             <Link
               key={item.to}
@@ -171,12 +171,12 @@ function MobileNav() {
   return (
     <nav aria-label="Navegação principal" className="mobile-nav fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-surface/95 px-2 pt-2 backdrop-blur lg:hidden">
       {items.map((item) => {
-        const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
+        const active = pathname.startsWith(item.to);
         return (
           <Button key={item.to} asChild variant="ghost" className={cn("h-14 min-w-0 flex-col gap-1 rounded-lg px-1 text-[11px]", active ? "bg-accent text-accent-foreground" : "text-muted-foreground")}>
             <Link to={item.to} aria-current={active ? "page" : undefined}>
               <item.icon className="size-5" />
-              <span>{item.to === "/" ? "Início" : item.label}</span>
+              <span>{item.label}</span>
             </Link>
           </Button>
         );

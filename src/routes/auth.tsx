@@ -12,7 +12,7 @@ import { MelfyBrand } from "@/components/melfy-brand";
 import { PLANS } from "@/lib/plans";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>): { mode: "signin" | "signup"; plan: "pessoal" | "avancado" | undefined } => ({ mode: search.mode === "signup" ? "signup" : "signin", plan: search.plan === "pessoal" || search.plan === "avancado" ? search.plan : undefined }),
+  validateSearch: (search: Record<string, unknown>): { mode: "signin" | "signup"; plan: "pessoal" | "avancado" | undefined } => ({ mode: search["mode"] === "signup" ? "signup" : "signin", plan: search["plan"] === "pessoal" || search["plan"] === "avancado" ? search["plan"] : undefined }),
   staticData: { sitemap: true },
   head: () => ({
     meta: [
