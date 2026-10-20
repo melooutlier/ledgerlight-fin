@@ -103,6 +103,7 @@ function Shell({ children }: { children: ReactNode }) {
         <main className="app-main mx-auto w-full min-w-0 max-w-7xl px-4 pt-6 sm:px-6 lg:px-10 lg:pt-10">{children}</main>
       </div>
       <MobileNav />
+      <QuickAdd floating />
     </div>
   );
 }
@@ -224,17 +225,17 @@ function PrivacyToggle({ wide = false }: { wide?: boolean }) {
   );
 }
 
-export function QuickAdd({ compact = false }: { compact?: boolean }) {
+export function QuickAdd({ compact = false, floating = false }: { compact?: boolean; floating?: boolean }) {
   const { openTransaction, openLoan, openAdvance } = useMovements();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className={compact ? "gap-1.5" : "w-full gap-2"} size={compact ? "sm" : "default"}>
-          <Plus className="size-4" />
-          {compact ? "Novo" : "Nova movimentação"}
+        <Button aria-label="Nova movimentação" className={floating ? "melfy-fab size-14 rounded-full shadow-xl" : compact ? "gap-1.5" : "w-full gap-2"} size={floating ? "icon" : compact ? "sm" : "default"}>
+          <Plus className={floating ? "size-6" : "size-4"} />
+          {floating ? <span className="sr-only">Nova movimentação</span> : compact ? "Novo" : "Nova movimentação"}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={compact ? "end" : "start"} className="w-52">
+      <DropdownMenuContent align={compact || floating ? "end" : "start"} side={floating ? "top" : "bottom"} className="w-52">
         <DropdownMenuItem onSelect={() => openTransaction("expense")}>
           <ArrowDownLeft className="size-4" /> Nova despesa
         </DropdownMenuItem>
