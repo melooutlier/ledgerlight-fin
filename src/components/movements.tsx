@@ -23,7 +23,7 @@ import {
 import { EXPENSE_METHODS } from "@/lib/period";
 import { emojiFor } from "@/lib/emoji";
 import { Switch } from "@/components/ui/switch";
-import { Camera } from "lucide-react";
+import { Camera, Plus } from "lucide-react";
 import { todayISO, num, money } from "@/lib/format";
 import {
   useAddLoanPayment,
@@ -33,6 +33,7 @@ import {
   useSaveAdvance,
   useSaveLoan,
   useSaveTransaction,
+  useSaveCategory,
   useAccounts,
   usePlan,
   uploadReceipt,
@@ -118,6 +119,9 @@ function TransactionDialog({
   const { data: categories = [] } = useCategories();
   const { data: advances = [] } = useAdvances();
   const save = useSaveTransaction();
+  const saveCategory = useSaveCategory();
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
   const tx = state.tx;
   const type = tx?.type === "income" || tx?.type === "expense" ? (tx.type as TxType) : state.type;
 
@@ -194,7 +198,12 @@ function TransactionDialog({
             />
           </div>
           <div className="space-y-1.5">
-            <Label>Categoria</Label>
+            <div className="flex items-center justify-between gap-2">
+              <Label>Categoria</Label>
+              <Button type="button" size="sm" variant="ghost" className="h-8 gap-1.5 px-2 text-primary" onClick={() => { setNewCategoryName(""); setCategoryDialogOpen(true); }}>
+                <Plus className="size-3.5" /> Criar categoria
+              </Button>
+            </div>
             <Select value={categoryId} onValueChange={setCategoryId}>
               <SelectTrigger>
                 <SelectValue placeholder="Escolher categoria" />
@@ -289,6 +298,46 @@ function TransactionDialog({
             </Button>
             <Button type="submit" disabled={save.isPending || uploading}>
               {uploading ? "A enviar…" : "Guardar"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+    <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Nova categoria de {type === "expense" ? "despesa" : "entrada"}</DialogTitle>
+          <DialogDescription>
+            A categoria ficará disponível nesta movimentação e na página Categorias.
+          </DialogDescription>
+        </DialogHeader>
+        <form
+          className="space-y-4"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const name = newCategoryName.trim();
+            if (!name) return;
+            if (categories.some((category) => category.kind === type && category.name.trim().toLocaleLowerCase() === name.toLocaleLowerCase())) {
+              toast.error("Já existe uma categoria com esse nome.");
+              return;
+            }
+            try {
+              await saveCategory.mutateAsync({ name, kind: type });
+              toast.success("Categoria criada. Já pode selecioná-la na lista.");
+              setCategoryDialogOpen(false);
+            } catch (err) {
+              toast.error(err instanceof Error ? err.message : "Não foi possível criar a categoria.");
+            }
+          }}
+        >
+          <div className="space-y-1.5">
+            <Label htmlFor="quick-category-name">Nome da categoria</Label>
+            <Input id="quick-category-name" autoFocus maxLength={60} value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} placeholder={type === "expense" ? "Ex.: Saúde" : "Ex.: Comissão"} />
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={() => setCategoryDialogOpen(false)}>Cancelar</Button>
+            <Button type="submit" disabled={!newCategoryName.trim() || saveCategory.isPending}>
+              {saveCategory.isPending ? "A guardar…" : "Guardar categoria"}
             </Button>
           </DialogFooter>
         </form>
