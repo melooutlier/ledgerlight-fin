@@ -15,6 +15,13 @@
       "when": 1791553527522,
       "tag": "0001_allow_transfer_types",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792496946739,
+      "tag": "0002_account_institution_columns",
+      "breakpoints": true
     }
   ]
 }

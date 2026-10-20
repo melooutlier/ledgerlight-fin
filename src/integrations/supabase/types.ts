@@ -16,13 +16,13 @@ export type Database = {
     Tables: {
       accounts: {
         Row: {
+          account_color: string
+          account_icon: string
+          account_number: string | null
           created_at: string
           id: string
           initial_balance: number
           institution: string
-          account_number: string | null
-          account_color: string
-          account_icon: string
           is_demo: boolean
           is_savings: boolean
           name: string
@@ -31,13 +31,13 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          account_color?: string
+          account_icon?: string
+          account_number?: string | null
           created_at?: string
           id?: string
           initial_balance?: number
           institution?: string
-          account_number?: string | null
-          account_color?: string
-          account_icon?: string
           is_demo?: boolean
           is_savings?: boolean
           name: string
@@ -46,13 +46,13 @@ export type Database = {
           user_id: string
         }
         Update: {
+          account_color?: string
+          account_icon?: string
+          account_number?: string | null
           created_at?: string
           id?: string
           initial_balance?: number
           institution?: string
-          account_number?: string | null
-          account_color?: string
-          account_icon?: string
           is_demo?: boolean
           is_savings?: boolean
           name?: string
