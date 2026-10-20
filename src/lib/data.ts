@@ -260,7 +260,7 @@ export function useSaveAdvance() {
 export function useSaveCategory() {
   const invalidate = useInvalidateAll();
   return useMutation({
-    mutationFn: async (input: { id?: string | undefined; name: string; kind: "income" | "expense" }) => {
+    mutationFn: async (input: { id?: string | undefined; name: string; kind: "income" | "expense" }): Promise<string> => {
       const user_id = await uid();
       if (input.id) {
         const { error } = await supabase
@@ -268,12 +268,15 @@ export function useSaveCategory() {
           .update({ name: input.name, kind: input.kind })
           .eq("id", input.id);
         if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("categories")
-          .insert({ name: input.name, kind: input.kind, user_id });
-        if (error) throw error;
+        return input.id;
       }
+      const { data, error } = await supabase
+        .from("categories")
+        .insert({ name: input.name, kind: input.kind, user_id })
+        .select("id")
+        .single();
+      if (error) throw error;
+      return data.id;
     },
     onSuccess: invalidate,
   });
