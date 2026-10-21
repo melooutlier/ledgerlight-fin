@@ -75,7 +75,7 @@ function addDays(days: number) {
 function UserRow({ userId, name, email, joined, sub }: { userId: string; name: string | null; email: string | null; joined: string; sub: Subscription | null }) {
   const update = useUpdateSubscription();
   const [plan, setPlan] = useState(sub?.plan === "casa" ? "avancado" : (sub?.plan ?? "pessoal"));
-  const [status, setStatus] = useState(sub?.status ?? "active");
+  const [status, setStatus] = useState(sub?.status ?? "suspended");
   const [expires, setExpires] = useState(sub?.expires_at ?? "");
   const eff = effectivePlan(sub, todayISO());
 
@@ -84,7 +84,7 @@ function UserRow({ userId, name, email, joined, sub }: { userId: string; name: s
     const e = next?.expires ?? expires;
     try {
       await update.mutateAsync({ user_id: userId, plan: p, status, expires_at: e || null });
-      toast.success("Plano actualizado.");
+      toast.success("Acesso actualizado com sucesso.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não foi possível actualizar.");
     }
@@ -96,7 +96,7 @@ function UserRow({ userId, name, email, joined, sub }: { userId: string; name: s
         <div className="flex items-center gap-2">
           <p className="truncate font-medium">{name ?? "—"}</p>
           <Badge variant="secondary">{PLANS[eff].name}</Badge>
-          {sub?.status === "suspended" && <Badge variant="destructive">Suspenso</Badge>}
+          {sub?.status === "suspended" ? <Badge variant="destructive">Suspenso</Badge> : !sub ? <Badge variant="outline">A aguardar autorização</Badge> : null}
         </div>
         <p className="truncate text-xs text-muted-foreground">{email} · desde {dateLabel(joined.slice(0, 10))}{sub?.expires_at ? ` · expira ${dateLabel(sub.expires_at)}` : ""}</p>
       </div>
