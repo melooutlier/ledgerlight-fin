@@ -93,7 +93,7 @@ function SettingsPage() {
       </section>
 
       <section className="rounded-2xl border bg-card p-5 sm:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="font-semibold">A sua subscrição</h2><p className="mt-1 text-sm text-muted-foreground">Plano e estado atual da conta.</p></div><span className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">{isAdmin ? "Administrador" : subscription?.status === "active" ? "Ativa" : "A aguardar ativação"}</span></div>
+        <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="font-semibold">A sua subscrição</h2><p className="mt-1 text-sm text-muted-foreground">Plano e estado atual da conta.</p></div><span className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">{isAdmin ? "Administrador" : subscription?.status === "suspended" ? "Suspensa" : subscription?.expires_at && subscription.expires_at.slice(0, 10) < new Date().toISOString().slice(0, 10) ? "Expirada" : subscription?.status === "active" ? "Ativa" : "A aguardar autorização"}</span></div>
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4 rounded-2xl bg-muted/60 p-4">
           <div><p className="text-sm text-muted-foreground">Plano atual</p><p className="mt-1 text-xl font-bold">{isAdmin ? "Acesso total" : PLANS[plan].name}</p><p className="mt-1 text-sm text-muted-foreground">{subscription?.expires_at ? `Válido até ${dateLabel(subscription.expires_at)}` : isAdmin ? "Sem expiração" : "Aguardando confirmação de pagamento"}</p></div>
           <Button variant="outline" onClick={() => navigate({ to: "/planos" })}>Ver planos</Button>
