@@ -542,11 +542,18 @@ export function usePlan() {
     refetchInterval: 30000,
     refetchOnWindowFocus: true,
   });
-  const plan: PlanId = admin.data ? "avancado" : effectivePlan(sub.data, todayISO());
+  const isAdmin = admin.data === true;
+  const today = todayISO();
+  const hasAccess = isAdmin || (
+    sub.data?.status === "active" &&
+    (!sub.data.expires_at || sub.data.expires_at.slice(0, 10) >= today)
+  );
+  const plan: PlanId = isAdmin ? "avancado" : effectivePlan(sub.data, today);
   return {
     plan,
     subscription: sub.data,
-    isAdmin: admin.data === true,
+    isAdmin,
+    hasAccess,
     can: (f: Feature) => hasFeature(plan, f),
     accountLimit: ACCOUNT_LIMIT[plan],
     isLoading: sub.isLoading || admin.isLoading,
@@ -573,8 +580,10 @@ export function useUpdateSubscription() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (input: { user_id: string; plan: string; status: string; expires_at: string | null }) => {
-      const { user_id, ...rest } = input;
-      const { error } = await supabase.from("subscriptions").update(rest).eq("user_id", user_id);
+      const { error } = await supabase.from("subscriptions").upsert(
+        { ...input, updated_at: new Date().toISOString() },
+        { onConflict: "user_id" },
+      );
       if (error) throw error;
     },
     onSuccess: () => {
