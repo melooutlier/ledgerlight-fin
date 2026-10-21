@@ -31,6 +31,19 @@ create policy "admin update subscriptions" on public.subscriptions
 drop policy if exists "admin delete subscriptions" on public.subscriptions;
 create policy "admin delete subscriptions" on public.subscriptions
   for delete to authenticated using (public.has_role('admin'::public.app_role, auth.uid()));
+drop policy if exists "subscription insert admin only" on public.subscriptions;
+create policy "subscription insert admin only" on public.subscriptions
+  as restrictive for insert to authenticated
+  with check (public.has_role('admin'::public.app_role, auth.uid()));
+drop policy if exists "subscription update admin only" on public.subscriptions;
+create policy "subscription update admin only" on public.subscriptions
+  as restrictive for update to authenticated
+  using (public.has_role('admin'::public.app_role, auth.uid()))
+  with check (public.has_role('admin'::public.app_role, auth.uid()));
+drop policy if exists "subscription delete admin only" on public.subscriptions;
+create policy "subscription delete admin only" on public.subscriptions
+  as restrictive for delete to authenticated
+  using (public.has_role('admin'::public.app_role, auth.uid()));
 
 -- Ensure every newly registered user gets a subscription row that is not active.
 create or replace function public.create_default_subscription()
