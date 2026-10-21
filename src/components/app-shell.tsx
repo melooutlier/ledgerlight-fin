@@ -130,6 +130,8 @@ function Brand() {
 function NavList({ onNavigate }: { onNavigate: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: isAdmin } = useIsAdmin();
+  const { hasAccess, isAdmin: planAdmin } = usePlan();
+  const visibleNav = hasAccess || isAdmin || planAdmin ? NAV : NAV.filter((item) => item.to === "/planos" || item.to === "/configuracoes");
 
   return (
     <div className="flex-1 overflow-y-auto px-3">
@@ -137,7 +139,7 @@ function NavList({ onNavigate }: { onNavigate: () => void }) {
         <QuickAdd />
       </div>
       <nav className="space-y-0.5 pb-4">
-        {NAV.map((item) => {
+        {visibleNav.map((item) => {
           const active = pathname.startsWith(item.to);
           return (
             <Link
@@ -176,6 +178,8 @@ function NavList({ onNavigate }: { onNavigate: () => void }) {
 
 function MobileNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { hasAccess, isAdmin, isLoading } = usePlan();
+  if (isLoading || (!hasAccess && !isAdmin)) return null;
   const items = [NAV[0], NAV[1], NAV[2], NAV[5]];
   return (
     <nav aria-label="Navegação principal" className="mobile-nav fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-surface/95 px-2 pt-2 backdrop-blur lg:hidden">
@@ -235,6 +239,8 @@ function PrivacyToggle({ wide = false }: { wide?: boolean }) {
 
 export function QuickAdd({ compact = false, floating = false }: { compact?: boolean; floating?: boolean }) {
   const { openTransaction, openLoan, openAdvance } = useMovements();
+  const { hasAccess, isAdmin, isLoading } = usePlan();
+  if (isLoading || (!hasAccess && !isAdmin)) return null;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
