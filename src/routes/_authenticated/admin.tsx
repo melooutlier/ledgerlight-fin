@@ -87,7 +87,11 @@ function UserRow({ userId, name, email, joined, sub }: { userId: string; name: s
       await update.mutateAsync({ user_id: userId, plan: p, status, expires_at: e || null });
       toast.success("Acesso actualizado com sucesso.");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Não foi possível actualizar.");
+      const value = err && typeof err === "object" ? err as Record<string, unknown> : {};
+      const detail = [value.message, value.details, value.hint, value.code ? "Código: " + String(value.code) : ""]
+        .filter(Boolean).map(String).join(" — ");
+      console.error("Erro ao actualizar acesso do utilizador:", err);
+      toast.error(detail || "Não foi possível actualizar. Confirma a migração de acessos no Supabase e o papel admin da tua conta.");
     }
   }
 
