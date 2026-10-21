@@ -35,7 +35,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MovementsProvider, useMovements } from "@/components/movements";
 import { cn } from "@/lib/utils";
 import { setPrivacy, usePrivacy } from "@/lib/privacy";
-import { useIsAdmin } from "@/lib/data";
+import { useIsAdmin, usePlan } from "@/lib/data";
 import { MelfyBrand } from "@/components/melfy-brand";
 
 const NAV = [
@@ -65,6 +65,10 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 function Shell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { hasAccess, isAdmin, isLoading } = usePlan();
+  const accessExempt = pathname.startsWith("/configuracoes") || pathname.startsWith("/planos") || pathname.startsWith("/admin");
+  const contentAllowed = hasAccess || isAdmin || accessExempt;
 
   return (
     <div className="min-h-screen bg-background">
@@ -100,7 +104,11 @@ function Shell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="app-main mx-auto w-full min-w-0 max-w-7xl px-4 pt-6 sm:px-6 lg:px-10 lg:pt-10">{children}</main>
+        <main className="app-main mx-auto w-full min-w-0 max-w-7xl px-4 pt-6 sm:px-6 lg:px-10 lg:pt-10">
+          {isLoading ? (
+            <div className="rounded-2xl border bg-card p-8 text-center text-sm text-muted-foreground">A verificar os acessos da sua conta…</div>
+          ) : contentAllowed ? children : <AccessBlocked />}
+        </main>
       </div>
       <MobileNav />
       <QuickAdd floating />
@@ -250,5 +258,30 @@ export function QuickAdd({ compact = false, floating = false }: { compact?: bool
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+
+function AccessBlocked() {
+  const navigate = useNavigate();
+  const { subscription } = usePlan();
+  const suspended = subscription?.status === "suspended";
+  const expired = !!subscription?.expires_at && subscription.expires_at.slice(0, 10) < new Date().toISOString().slice(0, 10);
+  const title = suspended ? "Acesso suspenso" : expired ? "O prazo de acesso terminou" : "A sua conta aguarda autorização";
+  const description = suspended
+    ? "O administrador suspendeu temporariamente o acesso às funcionalidades do Melfy."
+    : expired
+      ? "O período autorizado terminou. Contacte o administrador para renovar o acesso."
+      : "A sua conta foi criada, mas as funcionalidades só ficam disponíveis depois de o administrador conceder acesso.";
+  return (
+    <section className="mx-auto mt-8 max-w-xl rounded-2xl border bg-card p-6 text-center sm:p-9">
+      <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-muted"><Shield className="size-7" /></div>
+      <h1 className="mt-4 text-xl font-bold">{title}</h1>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">{description}</p>
+      <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <Button onClick={() => navigate({ to: "/configuracoes" })} variant="outline">Ver estado da conta</Button>
+        <Button onClick={() => navigate({ to: "/planos" })}>Ver planos</Button>
+      </div>
+    </section>
   );
 }
