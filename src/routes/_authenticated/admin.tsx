@@ -76,7 +76,7 @@ function UserRow({ userId, name, email, joined, sub }: { userId: string; name: s
   const update = useUpdateSubscription();
   const [plan, setPlan] = useState(sub?.plan === "casa" ? "avancado" : (sub?.plan ?? "pessoal"));
   const [status, setStatus] = useState(sub?.status ?? "suspended");
-  const [expires, setExpires] = useState(sub?.expires_at ?? "");
+  const [expires, setExpires] = useState(sub?.expires_at?.slice(0, 10) ?? "");
   const eff = effectivePlan(sub, todayISO());
 
   async function save(next?: { plan: string; expires: string }) {
