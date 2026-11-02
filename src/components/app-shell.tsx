@@ -44,7 +44,7 @@ const NAV = [
   { to: "/adiantamentos", label: "Adiantamentos", icon: PiggyBank },
   { to: "/contas", label: "Contas", icon: Landmark },
   { to: "/poupanca", label: "Poupança", icon: Coins },
-  { to: "/casa", label: "Casa", icon: Home },
+  { to: "/casa", label: "Despesas fixas", icon: Home },
   { to: "/orcamento", label: "Orçamento", icon: Target },
   { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
   { to: "/categorias", label: "Categorias", icon: Tags },
