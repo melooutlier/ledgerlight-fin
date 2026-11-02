@@ -40,8 +40,6 @@ import { MelfyBrand } from "@/components/melfy-brand";
 
 const NAV = [
   { to: "/inicio", label: "Visão geral", icon: LayoutDashboard },
-  { to: "/despesas", label: "Despesas", icon: ArrowDownLeft },
-  { to: "/entradas", label: "Entradas", icon: ArrowUpRight },
   { to: "/emprestimos", label: "Empréstimos", icon: HandCoins },
   { to: "/adiantamentos", label: "Adiantamentos", icon: PiggyBank },
   { to: "/contas", label: "Contas", icon: Landmark },
@@ -180,7 +178,7 @@ function MobileNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { hasAccess, isAdmin, isLoading } = usePlan();
   if (isLoading || (!hasAccess && !isAdmin)) return null;
-  const items = [NAV[0], NAV[1], NAV[2], NAV[5]];
+  const items = [NAV[0], NAV[3], NAV[8], NAV[6]];
   return (
     <nav aria-label="Navegação principal" className="mobile-nav fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-surface/95 px-2 pt-2 backdrop-blur lg:hidden">
       {items.map((item) => {
