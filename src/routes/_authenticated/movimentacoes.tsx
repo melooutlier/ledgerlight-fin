@@ -51,6 +51,7 @@ function MovementsPage() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [kind, setKind] = useState<"all" | Kind>("all");
+  const [accountFilter, setAccountFilter] = useState("all");
   const [search, setSearch] = useState("");
   const period = useMemo(() => buildPeriod(key, from, to), [key, from, to]);
 
@@ -63,7 +64,7 @@ function MovementsPage() {
   const accName = (id: string | null) => accounts.find((a) => a.id === id)?.name;
 
   const items = useMemo(() => {
-    const list: { id: string; date: string; kind: Kind; title: string; sub: string; amount: number; demo: boolean; emoji: string; pending?: boolean }[] = [];
+    const list: { id: string; date: string; kind: Kind; title: string; sub: string; amount: number; demo: boolean; emoji: string; accountId: string | null; pending?: boolean }[] = [];
     for (const t of transactions) {
       if (t.type === "transfer_in") continue;
       const isTransfer = t.type === "transfer_out";
@@ -78,6 +79,7 @@ function MovementsPage() {
           ? `${accName(t.account_id) ?? "?"} → ${accName(to?.account_id ?? null) ?? "?"}`
           : [catName, accName(t.account_id) ?? t.method].filter(Boolean).join(" · "),
         amount: num(t.amount),
+        accountId: t.account_id,
         demo: t.is_demo,
         emoji: isTransfer ? "🔁" : emojiFor(t.description, catName, t.type),
         pending: !t.confirmed,
@@ -91,6 +93,7 @@ function MovementsPage() {
         title: `Emprestado a ${l.person_name}`,
         sub: l.reason ?? "",
         amount: num(l.amount),
+        accountId: null,
         demo: l.is_demo,
         emoji: "🤝",
       });
@@ -104,6 +107,7 @@ function MovementsPage() {
         title: `Pagamento de ${loan?.person_name ?? "empréstimo"}`,
         sub: p.notes ?? "",
         amount: num(p.amount),
+        accountId: p.account_id,
         demo: p.is_demo,
         emoji: "✅",
       });
@@ -116,6 +120,7 @@ function MovementsPage() {
         title: a.purpose,
         sub: a.notes ?? "",
         amount: num(a.amount),
+        accountId: null,
         demo: a.is_demo,
         emoji: "🧾",
       });
@@ -127,6 +132,7 @@ function MovementsPage() {
     (i) =>
       inPeriod(i.date, period) &&
       (kind === "all" || i.kind === kind) &&
+      (accountFilter === "all" || (accountFilter === "none" ? i.accountId === null : i.accountId === accountFilter)) &&
       (search.trim() === "" || i.title.toLowerCase().includes(search.trim().toLowerCase())),
   );
 
@@ -157,6 +163,18 @@ function MovementsPage() {
                 {KIND_LABEL[k]}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+        <Select value={accountFilter} onValueChange={setAccountFilter}>
+          <SelectTrigger className="w-[210px]">
+            <SelectValue placeholder="Todas as contas" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas as contas</SelectItem>
+            {accounts.map((account) => (
+              <SelectItem key={account.id} value={account.id}>{account.name}</SelectItem>
+            ))}
+            <SelectItem value="none">Sem conta associada</SelectItem>
           </SelectContent>
         </Select>
         <Input
