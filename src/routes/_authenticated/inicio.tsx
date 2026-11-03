@@ -85,11 +85,9 @@ function Dashboard() {
   const expense = inRange.filter((t) => t.type === "expense").reduce((s, t) => s + num(t.amount), 0);
   const result = income - expense;
 
-  const allIncome = confirmed.filter((t) => t.type === "income").reduce((s, t) => s + num(t.amount), 0);
-  const allExpense = confirmed.filter((t) => t.type === "expense").reduce((s, t) => s + num(t.amount), 0);
-  const balance = allIncome - allExpense;
+  const balance = totalAccounts;
   const receivable = loans.reduce((s, l) => s + loanSummary(l, payments).pending, 0);
-  const forecast = balance + receivable;
+  const forecast = totalAccounts + receivable;
 
   const resultPercent = income > 0 ? Math.max(0, Math.min(100, Math.round((result / income) * 100))) : 0;
 
