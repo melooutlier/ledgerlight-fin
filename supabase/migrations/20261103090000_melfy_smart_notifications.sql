@@ -23,10 +23,7 @@ create table if not exists public.notification_preferences (
   fixed_bills_reminders boolean not null default true,
   loans_reminders boolean not null default true,
   updated_at timestamptz not null default now(),
-  constraint notification_daily_times_valid check (
-    cardinality(daily_times) between 1 and 3 and
-    daily_times <@ array(select to_char(t::time, 'HH24:MI') from unnest(daily_times) t)
-  )
+  constraint notification_daily_times_count check (cardinality(daily_times) between 1 and 3)
 );
 alter table public.notification_preferences enable row level security;
 grant select, insert, update on public.notification_preferences to authenticated;
