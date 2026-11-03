@@ -95,6 +95,8 @@ function SettingsPage() {
         </div>
       </section>
 
+      <NotificationSettings />
+
       <section className="rounded-2xl border bg-card p-5 sm:p-6">
         <h2 className="font-semibold">Moeda e região</h2><p className="mt-1 text-sm text-muted-foreground">Metical moçambicano (MT) · Formatação numérica portuguesa.</p>
       </section>
