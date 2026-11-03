@@ -478,6 +478,7 @@ export function useSaveBill() {
       due_day: number;
       member: string | null;
       last_paid_month?: string | null;
+      active?: boolean;
     }) => {
       const user_id = await uid();
       if (input.id) {
