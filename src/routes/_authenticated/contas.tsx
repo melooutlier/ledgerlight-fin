@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeftRight, Building2, Check, ChevronDown, CreditCard, Pencil, Plus, Search, Smartphone, Trash2, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
+import { InstitutionMark, MOZAMBIQUE_INSTITUTIONS } from "@/components/institution-mark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

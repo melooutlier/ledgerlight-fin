@@ -39,7 +39,7 @@ import { MovementsProvider, useMovements } from "@/components/movements";
 import { cn } from "@/lib/utils";
 import { setPrivacy, usePrivacy } from "@/lib/privacy";
 import { useIsAdmin, usePlan, useCurrentUser } from "@/lib/data";
-import { applyTheme, readSavedTheme, setThemeChoice, type ThemeChoice } from "@/lib/theme";
+import { readSavedTheme, setThemeChoice, type ThemeChoice } from "@/lib/theme";
 import { MelfyBrand } from "@/components/melfy-brand";
 
 const NAV_GROUPS = [
@@ -173,7 +173,7 @@ function Brand({ collapsed }: { collapsed: boolean }) {
     return (
       <div className="flex items-center justify-center py-7">
         <Link to="/inicio" aria-label="Melfy">
-          <MelfyBrand className="text-2xl [&_svg]:size-8 [&>span:last-child]:hidden" />
+          <svg className="size-8 text-primary" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M4 25V12L11 6L16 15L21 6L28 12V25" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </Link>
       </div>
     );
