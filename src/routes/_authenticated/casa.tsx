@@ -40,7 +40,8 @@ function HousePage() {
   if (isLoading) return null;
   if (!can("household")) return (<><PageHeader title="Casa" /><UpgradeNotice plan="avancado" what="Gestão das contas fixas da casa" /></>);
 
-  const total = bills.reduce((s, b) => s + num(b.amount), 0);
+  const activeBills = bills.filter((b) => b.active !== false);
+  const total = activeBills.reduce((s, b) => s + num(b.amount), 0);
   const paid = bills.filter((b) => b.last_paid_month === month).reduce((s, b) => s + num(b.amount), 0);
 
   async function markPaid(b: HouseholdBill) {
@@ -77,14 +78,15 @@ function HousePage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="font-medium">{b.name}</p>
-                    {isPaid ? <Badge variant="secondary">✅ Pago</Badge> : late ? <Badge variant="destructive">Atrasado</Badge> : soon ? <Badge variant="outline">Vence em breve</Badge> : null}
+                    {b.active === false ? <Badge variant="outline">Inativa</Badge> : isPaid ? <Badge variant="secondary">✅ Pago</Badge> : late ? <Badge variant="destructive">Atrasado</Badge> : soon ? <Badge variant="outline">Vence em breve</Badge> : null}
                   </div>
                   <p className="text-xs text-muted-foreground">Dia {b.due_day}{b.member ? ` · ${b.member}` : ""}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <span className="tnum font-semibold">{money(b.amount)}</span>
-                {!isPaid && <Button size="sm" onClick={() => markPaid(b)}>Marcar pago</Button>}
+                {b.active !== false && !isPaid && <Button size="sm" onClick={() => markPaid(b)}>Marcar pago</Button>}
+                <Button size="sm" variant="outline" onClick={async () => { await saveBill.mutateAsync({ id: b.id, name: b.name, emoji: b.emoji, amount: num(b.amount), due_day: b.due_day, member: b.member, active: b.active === false }); toast.success(b.active === false ? "Conta reativada." : "Conta desativada."); }}>{b.active === false ? "Ativar" : "Desativar"}</Button>
                 <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => setEdit({ open: true, bill: b })}><Pencil className="size-4" /></Button>
                 <Button variant="ghost" size="icon" aria-label="Eliminar" onClick={async () => { await remove.mutateAsync(b.id); toast.success("Conta removida."); }}><Trash2 className="size-4 text-destructive" /></Button>
               </div>
@@ -105,6 +107,7 @@ function BillDialog({ state, onClose }: { state: { open: boolean; bill?: Househo
   const [amount, setAmount] = useState(b ? String(b.amount) : "");
   const [dueDay, setDueDay] = useState(String(b?.due_day ?? 5));
   const [member, setMember] = useState(b?.member ?? "");
+  const [active, setActive] = useState(b?.active !== false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -112,7 +115,7 @@ function BillDialog({ state, onClose }: { state: { open: boolean; bill?: Househo
     const d = Math.min(31, Math.max(1, Number(dueDay) || 1));
     if (!name.trim()) { toast.error("Indique o nome."); return; }
     if (!Number.isFinite(v) || v <= 0) { toast.error("Indique um valor válido."); return; }
-    await save.mutateAsync({ id: b?.id, name: name.trim(), emoji: emoji || "🏠", amount: v, due_day: d, member: member.trim() || null });
+    await save.mutateAsync({ id: b?.id, name: name.trim(), emoji: emoji || "🏠", amount: v, due_day: d, member: member.trim() || null, active });
     toast.success("Conta guardada.");
     onClose();
   }
@@ -134,6 +137,7 @@ function BillDialog({ state, onClose }: { state: { open: boolean; bill?: Househo
             <div className="space-y-1.5"><Label htmlFor="b-day">Dia de vencimento</Label><Input id="b-day" inputMode="numeric" value={dueDay} onChange={(e) => setDueDay(e.target.value)} /></div>
           </div>
           <div className="space-y-1.5"><Label htmlFor="b-member">Quem paga (opcional)</Label><Input id="b-member" value={member} maxLength={40} onChange={(e) => setMember(e.target.value)} placeholder="Ex.: Mãe, João" /></div>
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" className="size-4 accent-primary" checked={active} onChange={(e) => setActive(e.target.checked)} /> Conta fixa ativa (incluída nos lembretes)</label>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
             <Button type="submit" disabled={save.isPending}>Guardar</Button>
