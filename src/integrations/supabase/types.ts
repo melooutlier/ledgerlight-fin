@@ -166,6 +166,8 @@ export type Database = {
       }
       household_bills: {
         Row: {
+          active: boolean
+          active?: boolean
           amount: number
           created_at: string
           due_day: number
@@ -190,6 +192,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          active?: boolean
           amount?: number
           created_at?: string
           due_day?: number
