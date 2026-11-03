@@ -16,7 +16,7 @@ function decodeKey(value: string) {
   return Uint8Array.from(atob(padded.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
 }
 function deviceType(): "mobile" | "desktop" {
-  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ? "mobile" : "desktop";
+  return typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ? "mobile" : "desktop";
 }
 function arrayBufferToBase64(value: ArrayBuffer) {
   return btoa(String.fromCharCode(...new Uint8Array(value)));
@@ -113,7 +113,7 @@ export function NotificationSettings() {
   }
 
   const patch = (value: Partial<Preferences>) => void save({ ...prefs, ...value });
-  const statusText = !("Notification" in window) ? "Não suportado neste navegador" : permission === "denied" ? "Bloqueadas nas definições do navegador" : subscribed ? "Ativas neste dispositivo" : "Ainda não ativadas";
+  const statusText = typeof window === "undefined" || !("Notification" in window) ? "Não suportado neste navegador" : permission === "denied" ? "Bloqueadas nas definições do navegador" : subscribed ? "Ativas neste dispositivo" : "Ainda não ativadas";
 
   return <section className="space-y-5 rounded-2xl border bg-card p-5 sm:p-6">
     <div className="flex items-start gap-3">
