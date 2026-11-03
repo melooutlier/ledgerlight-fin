@@ -58,3 +58,4 @@ create table if not exists public.notification_deliveries (
 alter table public.notification_deliveries enable row level security;
 revoke all on public.notification_deliveries from anon, authenticated;
 grant all on public.notification_deliveries to service_role;
+grant all on public.push_subscriptions, public.notification_preferences, public.household_bills, public.loans, public.loan_payments to service_role;
