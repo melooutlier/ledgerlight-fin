@@ -247,7 +247,9 @@ function Dashboard() {
         </div>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-2">\n        ter justify-between gap-3">
+      <div className="grid gap-5 lg:grid-cols-2">
+        <section className="min-w-0 rounded-3xl border bg-card p-5">
+          <div className="mb-4 flex items-center justify-between gap-3">
             <h2 className="font-bold">A receber</h2>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="tnum">Pendente <span className="font-bold text-foreground">{fmtMoney(receivable, hidden)}</span></span>
@@ -271,14 +273,7 @@ function Dashboard() {
                   </div>
                   <div className="shrink-0 text-right">
                     <p className="tnum text-sm font-bold">{fmtMoney(summary.pending, hidden)}</p>
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "mt-0.5",
-                        summary.status === "Atrasado" && "bg-destructive/10 text-destructive",
-                        summary.status === "Parcial" && "bg-amber-500/10 text-amber-700 dark:text-amber-400",
-                      )}
-                    >
+                    <Badge variant="secondary" className={cn("mt-0.5", summary.status === "Atrasado" && "bg-destructive/10 text-destructive", summary.status === "Parcial" && "bg-amber-500/10 text-amber-700 dark:text-amber-400")}>
                       {summary.status}
                     </Badge>
                   </div>
