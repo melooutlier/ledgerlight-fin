@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
-import { ArrowDownLeft, ArrowUpRight, ChevronLeft, ChevronRight, HandCoins, Landmark, Maximize2, Plus, ReceiptText } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ChevronLeft, ChevronRight, HandCoins, Maximize2, Plus, ReceiptText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,11 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ThemeToggle } from "@/components/app-shell";
-import { InstitutionMark } from "@/components/institution-mark";
 import { useMovements } from "@/components/movements";
 import { buildAlerts } from "@/lib/alerts";
 import {
-  ACCOUNT_TYPES,
   accountBalances,
   loanSummary,
   useAccounts,
@@ -167,7 +165,7 @@ function Dashboard() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)] lg:divide-x">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-muted-foreground">Saldo atual</p>
-            <p className="tnum mt-1 break-words text-4xl font-extrabold sm:text-5xl">{fmtMoney(balance, hidden)}</p>
+            <p className="tnum mt-1 break-words text-4xl font-extrabold sm:text-5xl">{fmtMoney(totalAccounts, hidden)}</p>
             <p className="mt-3 text-sm text-muted-foreground">Em {accounts.length} conta{accounts.length === 1 ? "" : "s"}</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Previsto no fim do mês <span className="tnum font-bold text-foreground">{fmtMoney(forecast, hidden)}</span>
@@ -201,13 +199,13 @@ function Dashboard() {
             </div>
           </div>
         </div>
-        <div className="mt-7 grid gap-5 border-t pt-6 sm:grid-cols-2">
+        <div className="mt-6 grid grid-cols-2 gap-3 border-t pt-5 sm:gap-5 sm:pt-6">
           <div>
             <div className="flex items-center gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-positive text-positive"><ArrowDownLeft className="size-5" /></span>
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-positive/10 text-positive sm:size-10"><ArrowDownLeft className="size-4 sm:size-5" /></span>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-muted-foreground">Receitas</p>
-                <p className="tnum text-xl font-extrabold text-positive">{fmtMoney(income, hidden)}</p>
+                <p className="tnum break-words text-base font-extrabold text-positive sm:text-xl">{fmtMoney(income, hidden)}</p>
               </div>
             </div>
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
@@ -216,10 +214,10 @@ function Dashboard() {
           </div>
           <div>
             <div className="flex items-center gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-destructive text-destructive-foreground"><ArrowUpRight className="size-5" /></span>
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-destructive/10 text-destructive sm:size-10"><ArrowUpRight className="size-4 sm:size-5" /></span>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-muted-foreground">Despesas</p>
-                <p className="tnum text-xl font-extrabold text-destructive">{fmtMoney(expense, hidden)}</p>
+                <p className="tnum break-words text-base font-extrabold text-destructive sm:text-xl">{fmtMoney(expense, hidden)}</p>
               </div>
             </div>
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
@@ -249,40 +247,7 @@ function Dashboard() {
         </div>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-2">
-        <section className="min-w-0 rounded-3xl border bg-card p-5">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="font-bold">Saldo em contas</h2>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="tnum">Total de {accounts.length} conta{accounts.length === 1 ? "" : "s"} <span className="font-bold text-foreground">{fmtMoney(totalAccounts, hidden)}</span></span>
-              <Link to="/contas" aria-label="Abrir contas" className="grid size-7 place-items-center rounded-lg bg-muted text-muted-foreground hover:text-foreground"><Maximize2 className="size-3.5" /></Link>
-            </div>
-          </div>
-          {accounts.length === 0 ? (
-            <div className="flex min-h-40 flex-col items-center justify-center rounded-2xl border border-dashed px-4 text-center">
-              <Landmark className="mb-2 size-5 text-muted-foreground" />
-              <p className="text-sm font-medium">Ainda sem contas</p>
-              <p className="mt-1 text-xs text-muted-foreground">Adicione M-Pesa, e-Mola ou banco para acompanhar os saldos.</p>
-            </div>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {accounts.map((account) => (
-                <div key={account.id} className="relative min-w-0 overflow-hidden rounded-2xl border p-3.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <InstitutionMark institution={account.institution ?? account.type} size="sm" />
-                    <span className="truncate text-[11px] font-bold">{account.name}</span>
-                  </div>
-                  <p className="mt-2 text-[10px] text-muted-foreground">{ACCOUNT_TYPES[account.type]?.label ?? account.type}</p>
-                  <p className="tnum mt-2 text-lg font-extrabold">{fmtMoney(balances.get(account.id) ?? 0, hidden)}</p>
-                  <span className="absolute inset-x-0 bottom-0 h-[3px]" style={{ backgroundColor: account.account_color || "#84cc16" }} />
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <section className="min-w-0 rounded-3xl border bg-card p-5">
-          <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="grid gap-5 lg:grid-cols-2">\n        ter justify-between gap-3">
             <h2 className="font-bold">A receber</h2>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="tnum">Pendente <span className="font-bold text-foreground">{fmtMoney(receivable, hidden)}</span></span>
