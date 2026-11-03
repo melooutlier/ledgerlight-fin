@@ -88,7 +88,7 @@ function UserRow({ userId, name, email, joined, sub }: { userId: string; name: s
       toast.success("Acesso actualizado com sucesso.");
     } catch (err) {
       const value = err && typeof err === "object" ? err as Record<string, unknown> : {};
-      const detail = [value.message, value.details, value.hint, value.code ? "Código: " + String(value.code) : ""]
+      const detail = [value["message"], value["details"], value["hint"], value["code"] ? "Código: " + String(value["code"]) : ""]
         .filter(Boolean).map(String).join(" — ");
       console.error("Erro ao actualizar acesso do utilizador:", err);
       toast.error(detail || "Não foi possível actualizar. Confirma a migração de acessos no Supabase e o papel admin da tua conta.");
