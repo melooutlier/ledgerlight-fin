@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/page-header";
+import { useMovements } from "@/components/movements";
 import { PeriodPicker } from "@/components/period-picker";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,13 @@ const KIND_LABEL: Record<Kind, string> = {
 
 function MovementsPage() {
   const hidden = usePrivacy();
+  const { openTransaction } = useMovements();
+  useEffect(() => {
+    if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("new") === "1") {
+      openTransaction("expense");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [openTransaction]);
   const [key, setKey] = useState<PeriodKey>("this_month");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
