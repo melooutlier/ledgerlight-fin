@@ -69,9 +69,10 @@ Deno.serve(async (req) => {
         processed++;
       }
       if (pref.fixed_bills_reminders) {
-        const { data: bills, error } = await admin.from("household_bills").select("id,name,amount,due_day").eq("user_id", pref.user_id).eq("active", true);
+        const { data: bills, error } = await admin.from("household_bills").select("id,name,amount,due_day,last_paid_month").eq("user_id", pref.user_id).eq("active", true);
         if (error) throw error;
         for (const bill of bills || []) {
+          if (bill.last_paid_month === `${p.year}-${p.month}-01`) continue;
           const due = new Date(Date.UTC(Number(p.year), Number(p.month)-1, Math.min(Number(bill.due_day), new Date(Date.UTC(Number(p.year), Number(p.month), 0)).getUTCDate()))).toISOString().slice(0,10);
           const when = due === today ? "today" : due === tomorrow ? "tomorrow" : null;
           if (!when) continue;
@@ -84,11 +85,17 @@ Deno.serve(async (req) => {
       if (pref.loans_reminders) {
         const { data: loans, error } = await admin.from("loans").select("id,person_name,amount,due_date").eq("user_id", pref.user_id).not("due_date", "is", null);
         if (error) throw error;
+        const { data: loanPayments, error: paymentsError } = await admin.from("loan_payments").select("loan_id,amount").eq("user_id", pref.user_id);
+        if (paymentsError) throw paymentsError;
+        const paidByLoan = new Map<string, number>();
+        for (const payment of loanPayments || []) paidByLoan.set(payment.loan_id, (paidByLoan.get(payment.loan_id) || 0) + Number(payment.amount));
         for (const loan of loans || []) {
+          const remaining = Math.max(0, Number(loan.amount) - (paidByLoan.get(loan.id) || 0));
+          if (remaining <= 0) continue;
           const when = loan.due_date === today ? "today" : loan.due_date === tomorrow ? "tomorrow" : null;
           if (!when) continue;
           const isToday = when === "today";
-          const msg = isToday ? `Hoje é o dia previsto para o recebimento do empréstimo de ${loan.person_name} (${Number(loan.amount).toLocaleString("pt-PT")} MT).` : `Lembrete: O pagamento do empréstimo de ${loan.person_name} (${Number(loan.amount).toLocaleString("pt-PT")} MT) está previsto para amanhã.`;
+          const msg = isToday ? `Hoje é o dia previsto para o recebimento do empréstimo de ${loan.person_name} (${remaining.toLocaleString("pt-PT")} MT).` : `Lembrete: O pagamento do empréstimo de ${loan.person_name} (${Number(loan.amount).toLocaleString("pt-PT")} MT) está previsto para amanhã.`;
           await deliver(pref.user_id, { title: isToday ? "Empréstimo previsto para hoje" : "Empréstimo previsto para amanhã", body: msg, url: "/emprestimos", tag: `loan-${loan.id}` }, `loan:${loan.id}:${loan.due_date}:${when}`);
           processed++;
         }
