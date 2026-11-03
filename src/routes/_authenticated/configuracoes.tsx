@@ -12,6 +12,8 @@ import { PLANS } from "@/lib/plans";
 import { dateLabel } from "@/lib/format";
 
 import { applyTheme, THEME_KEY, type ThemeChoice } from "@/lib/theme";
+import { NotificationSettings } from "@/components/notification-settings";
+
 
 export const Route = createFileRoute("/_authenticated/configuracoes")({
   staticData: { sitemap: false },
