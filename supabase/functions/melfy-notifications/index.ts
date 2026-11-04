@@ -58,7 +58,10 @@ Deno.serve(async (req) => {
     // without the secret ever leaving the server side.
     const cronProvided = req.headers.get("x-cron-secret");
     const cronEnvSecret = Deno.env.get("MELFY_CRON_SECRET");
-    let cronAuthorized = !!cronEnvSecret && !!cronProvided && cronProvided === cronEnvSecret;
+    const serviceSecret = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    let cronAuthorized =
+      (!!cronEnvSecret && !!cronProvided && cronProvided === cronEnvSecret) ||
+      (!!serviceSecret && !!cronProvided && cronProvided === serviceSecret);
     if (!cronAuthorized && cronProvided) {
       const { data: cronSecretRow } = await admin.schema("vault").from("decrypted_secrets")
         .select("decrypted_secret").eq("name", "melfy_cron_secret").maybeSingle();
