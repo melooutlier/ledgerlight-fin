@@ -405,7 +405,7 @@ export function QuickAdd({ compact = false, floating = false }: { compact?: bool
           <ArrowDownLeft className="size-4" /> Nova despesa
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => openTransaction("income")}>
-          <ArrowUpRight className="size-4" /> Nova entrada
+          <ArrowUpRight className="size-4" /> Nova receita
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => openLoan()}>
           <HandCoins className="size-4" /> Novo empréstimo
