@@ -72,7 +72,7 @@ function ReportsPage() {
       );
       const inc = rows.filter((t) => t.type === "income").reduce((s, t) => s + num(t.amount), 0);
       const exp = rows.filter((t) => t.type === "expense").reduce((s, t) => s + num(t.amount), 0);
-      return { month: shortMonth(`${p}-01`), Entradas: inc, Despesas: exp, Saldo: inc - exp };
+      return { month: shortMonth(`${p}-01`), Receitas: inc, Despesas: exp, Saldo: inc - exp };
     });
   }, [transactions, year, catId]);
 
@@ -157,7 +157,7 @@ function ReportsPage() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <StatCard label="Entradas" value={income} tone="positive" />
+        <StatCard label="Receitas" value={income} tone="positive" />
         <StatCard label="Despesas" value={expense} tone="negative" />
         <StatCard label="Saldo" value={income - expense} tone="accent" />
       </div>
@@ -171,7 +171,7 @@ function ReportsPage() {
               <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} />
               <YAxis tickLine={false} axisLine={false} fontSize={12} width={70} />
               <Tooltip formatter={(v: number | string) => money(Number(v))} />
-              <Line type="monotone" dataKey="Entradas" stroke="var(--color-chart-1)" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="Receitas" stroke="var(--color-chart-1)" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="Despesas" stroke="var(--color-chart-2)" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="Saldo" stroke="var(--color-chart-3)" strokeWidth={2} dot={false} />
             </LineChart>
