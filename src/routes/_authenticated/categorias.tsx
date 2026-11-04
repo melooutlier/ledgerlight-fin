@@ -29,11 +29,11 @@ export const Route = createFileRoute("/_authenticated/categorias")({
   head: () => ({
     meta: [
       { title: "Categorias — Meu Financeiro" },
-      { name: "description", content: "Organize as suas entradas e despesas por categoria." },
+      { name: "description", content: "Organize as suas receitas e despesas por categoria." },
       { property: "og:title", content: "Categorias — Meu Financeiro" },
       {
         property: "og:description",
-        content: "Organize as suas entradas e despesas por categoria.",
+        content: "Organize as suas receitas e despesas por categoria.",
       },
     ],
   }),
@@ -76,7 +76,7 @@ function CategoriesPage() {
       <Tabs value={kind} onValueChange={(v) => setKind(v as "expense" | "income")}>
         <TabsList>
           <TabsTrigger value="expense">Despesas</TabsTrigger>
-          <TabsTrigger value="income">Entradas</TabsTrigger>
+          <TabsTrigger value="income">Receitas</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -147,7 +147,7 @@ function CategoriesPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="expense">Despesa</SelectItem>
-                  <SelectItem value="income">Entrada</SelectItem>
+                  <SelectItem value="income">Receita</SelectItem>
                 </SelectContent>
               </Select>
             </div>
