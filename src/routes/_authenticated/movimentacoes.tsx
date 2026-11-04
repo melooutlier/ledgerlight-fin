@@ -18,6 +18,11 @@ import { dateLabel, money, num } from "@/lib/format";
 import { fmtMoney, usePrivacy } from "@/lib/privacy";
 import { buildPeriod, inPeriod, type PeriodKey } from "@/lib/period";
 import { cn } from "@/lib/utils";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { useDeleteRow, useDeleteLoanPayment } from "@/lib/data";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/movimentacoes")({
   staticData: { sitemap: false },
@@ -48,7 +53,11 @@ const KIND_LABEL: Record<Kind, string> = {
 
 function MovementsPage() {
   const hidden = usePrivacy();
-  const { openTransaction } = useMovements();
+  const { openTransaction, openLoan, openAdvance } = useMovements();
+  const deleteTransaction = useDeleteRow("transactions");
+  const deleteLoan = useDeleteRow("loans");
+  const deleteAdvance = useDeleteRow("personal_advances");
+  const deletePayment = useDeleteLoanPayment();
   useEffect(() => {
     if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("new") === "1") {
       openTransaction("expense");
@@ -72,7 +81,7 @@ function MovementsPage() {
   const accName = (id: string | null) => accounts.find((a) => a.id === id)?.name;
 
   const items = useMemo(() => {
-    const list: { id: string; date: string; kind: Kind; title: string; sub: string; amount: number; demo: boolean; emoji: string; accountId: string | null; pending?: boolean }[] = [];
+    const list: { id: string; date: string; kind: Kind; title: string; sub: string; amount: number; demo: boolean; emoji: string; accountId: string | null; pending?: boolean; source: any }[] = [];
     for (const t of transactions) {
       if (t.type === "transfer_in") continue;
       const isTransfer = t.type === "transfer_out";
@@ -80,6 +89,7 @@ function MovementsPage() {
       const catName = categories.find((c) => c.id === t.category_id)?.name;
       list.push({
         id: `t-${t.id}`,
+        source: t,
         date: t.tx_date,
         kind: isTransfer ? "transfer" : (t.type as Kind),
         title: t.description,
@@ -96,6 +106,7 @@ function MovementsPage() {
     for (const l of loans) {
       list.push({
         id: `l-${l.id}`,
+        source: l,
         date: l.loan_date,
         kind: "loan",
         title: `Emprestado a ${l.person_name}`,
@@ -110,6 +121,7 @@ function MovementsPage() {
       const loan = loans.find((l) => l.id === p.loan_id);
       list.push({
         id: `p-${p.id}`,
+        source: p,
         date: p.paid_at,
         kind: "loan_payment",
         title: `Pagamento de ${loan?.person_name ?? "empréstimo"}`,
@@ -123,6 +135,7 @@ function MovementsPage() {
     for (const a of advances) {
       list.push({
         id: `a-${a.id}`,
+        source: a,
         date: a.advance_date,
         kind: "advance",
         title: a.purpose,
@@ -233,6 +246,42 @@ function MovementsPage() {
                 >
                   {fmtMoney(i.amount, hidden)}
                 </span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="size-9 shrink-0" aria-label="Opções da movimentação">
+                      <MoreHorizontal className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {i.kind === "income" || i.kind === "expense" ? (
+                      <DropdownMenuItem onClick={() => openTransaction(i.kind as "income" | "expense", i.source)}>
+                        <Pencil className="mr-2 size-4" /> Editar
+                      </DropdownMenuItem>
+                    ) : i.kind === "loan" ? (
+                      <DropdownMenuItem onClick={() => openLoan(i.source)}>
+                        <Pencil className="mr-2 size-4" /> Editar
+                      </DropdownMenuItem>
+                    ) : i.kind === "advance" ? (
+                      <DropdownMenuItem onClick={() => openAdvance(i.source)}>
+                        <Pencil className="mr-2 size-4" /> Editar
+                      </DropdownMenuItem>
+                    ) : null}
+                    <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={async () => {
+                      if (!window.confirm("Tens a certeza de que pretendes apagar esta movimentação? Esta ação não pode ser desfeita.")) return;
+                      try {
+                        if (i.kind === "income" || i.kind === "expense" || i.kind === "transfer") await deleteTransaction.mutateAsync(i.source.id);
+                        else if (i.kind === "loan") await deleteLoan.mutateAsync(i.source.id);
+                        else if (i.kind === "advance") await deleteAdvance.mutateAsync(i.source.id);
+                        else await deletePayment.mutateAsync(i.source.id);
+                        toast.success("Movimentação apagada.");
+                      } catch (error) {
+                        toast.error(error instanceof Error ? error.message : "Não foi possível apagar a movimentação.");
+                      }
+                    }}>
+                      <Trash2 className="mr-2 size-4" /> Apagar
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ))}
           </div>
