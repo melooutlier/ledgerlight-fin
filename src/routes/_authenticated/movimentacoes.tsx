@@ -29,11 +29,11 @@ export const Route = createFileRoute("/_authenticated/movimentacoes")({
   head: () => ({
     meta: [
       { title: "Movimentações — Meu Financeiro" },
-      { name: "description", content: "Histórico completo de entradas, despesas, empréstimos e adiantamentos." },
+      { name: "description", content: "Histórico completo de receitas, despesas, empréstimos e adiantamentos." },
       { property: "og:title", content: "Movimentações — Meu Financeiro" },
       {
         property: "og:description",
-        content: "Histórico completo de entradas, despesas, empréstimos e adiantamentos.",
+        content: "Histórico completo de receitas, despesas, empréstimos e adiantamentos.",
       },
     ],
   }),
