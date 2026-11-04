@@ -20,7 +20,7 @@ import { buildPeriod, inPeriod, type PeriodKey } from "@/lib/period";
 import { cn } from "@/lib/utils";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { useDeleteRow, useDeleteLoanPayment } from "@/lib/data";
+import { useDeleteRow, useDeleteLoanPayment, useDeleteTransaction } from "@/lib/data";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
@@ -54,7 +54,7 @@ const KIND_LABEL: Record<Kind, string> = {
 function MovementsPage() {
   const hidden = usePrivacy();
   const { openTransaction, openLoan, openAdvance } = useMovements();
-  const deleteTransaction = useDeleteRow("transactions");
+  const deleteTransaction = useDeleteTransaction();
   const deleteLoan = useDeleteRow("loans");
   const deleteAdvance = useDeleteRow("personal_advances");
   const deletePayment = useDeleteLoanPayment();
