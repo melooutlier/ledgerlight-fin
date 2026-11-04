@@ -5,9 +5,9 @@ export const Route = createFileRoute("/_authenticated/entradas")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Entradas — Meu Financeiro" },
+      { title: "Receitas — Melfy" },
       { name: "description", content: "Todo o dinheiro que recebeu, organizado por categoria." },
-      { property: "og:title", content: "Entradas — Meu Financeiro" },
+      { property: "og:title", content: "Receitas — Melfy" },
       {
         property: "og:description",
         content: "Todo o dinheiro que recebeu, organizado por categoria.",
