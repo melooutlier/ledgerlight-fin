@@ -160,6 +160,23 @@ export function useSaveTransaction() {
   });
 }
 
+export function useDeleteTransaction() {
+  const invalidate = useInvalidateAll();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data: tx, error: readError } = await supabase
+        .from("transactions").select("transfer_group").eq("id", id).single();
+      if (readError) throw readError;
+      let query = supabase.from("transactions").delete();
+      if (tx.transfer_group) query = query.eq("transfer_group", tx.transfer_group);
+      else query = query.eq("id", id);
+      const { error } = await query;
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+}
+
 export function useDeleteRow(
   table: "transactions" | "loans" | "personal_advances" | "categories" | "accounts" | "savings_goals" | "household_bills",
 ) {
