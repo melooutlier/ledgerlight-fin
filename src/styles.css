@@ -629,3 +629,41 @@ button.bg-primary:hover, a.bg-primary:hover { filter: brightness(1.04); box-shad
 .app-main .rounded-xl.border.bg-card, .app-main .rounded-lg.border.bg-card, .stat-card { border-radius: 1.5rem; }
 .melfy-glow-card { background: radial-gradient(40rem 16rem at 100% 0%, oklch(0.89 0.23 128 / 10%), transparent 60%), var(--card); }
 @media (max-width: 639px) { .app-main h1 { font-size: 1.75rem; line-height: 1.15; } }
+
+
+/* Formulários de receitas e despesas: fundo sólido e rótulos legíveis */
+.transaction-form-dialog,
+.transaction-form-dialog[data-state="open"] {
+  background: #ffffff !important;
+  color: #111827 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  isolation: isolate;
+}
+.transaction-form-dialog label,
+.transaction-form-dialog [data-slot="label"],
+.transaction-form-dialog .text-sm,
+.transaction-form-dialog h2,
+.transaction-form-dialog p {
+  color: #111827 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+.transaction-form-dialog input,
+.transaction-form-dialog textarea,
+.transaction-form-dialog [role="combobox"] {
+  background: #ffffff !important;
+  color: #111827 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+.transaction-form-dialog input::placeholder,
+.transaction-form-dialog textarea::placeholder {
+  color: #6b7280 !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #6b7280 !important;
+}
