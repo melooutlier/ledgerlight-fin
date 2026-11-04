@@ -77,12 +77,12 @@ export function TransactionsView({ type }: { type: "income" | "expense" }) {
   return (
     <>
       <PageHeader
-        title={isExpense ? "Despesas" : "Entradas"}
+        title={isExpense ? "Despesas" : "Receitas"}
         subtitle={period.label}
         action={
           <Button onClick={() => openTransaction(type)} className="gap-2">
             <Plus className="size-4" />
-            {isExpense ? "Adicionar despesa" : "Adicionar entrada"}
+            {isExpense ? "Adicionar despesa" : "Adicionar receita"}
           </Button>
         }
       />
