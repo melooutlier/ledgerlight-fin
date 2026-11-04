@@ -302,6 +302,54 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_deliveries: {
+        Row: {
+          id: string
+          notification_key: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          notification_key: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          notification_key?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          daily_reminders_enabled: boolean
+          daily_times: string[]
+          fixed_bills_reminders: boolean
+          loans_reminders: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          daily_reminders_enabled?: boolean
+          daily_times?: string[]
+          fixed_bills_reminders?: boolean
+          loans_reminders?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          daily_reminders_enabled?: boolean
+          daily_times?: string[]
+          fixed_bills_reminders?: boolean
+          loans_reminders?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       personal_advances: {
         Row: {
           advance_date: string
@@ -338,24 +386,6 @@ export type Database = {
         }
         Relationships: []
       }
-      notification_preferences: {
-        Row: { user_id: string; daily_reminders_enabled: boolean; daily_times: string[]; fixed_bills_reminders: boolean; loans_reminders: boolean; updated_at: string }
-        Insert: { user_id: string; daily_reminders_enabled?: boolean; daily_times?: string[]; fixed_bills_reminders?: boolean; loans_reminders?: boolean; updated_at?: string }
-        Update: { user_id?: string; daily_reminders_enabled?: boolean; daily_times?: string[]; fixed_bills_reminders?: boolean; loans_reminders?: boolean; updated_at?: string }
-        Relationships: []
-      }
-      push_subscriptions: {
-        Row: { id: string; user_id: string; endpoint: string; p256dh: string; auth: string; device_type: string; created_at: string; updated_at: string }
-        Insert: { id?: string; user_id: string; endpoint: string; p256dh: string; auth: string; device_type: string; created_at?: string; updated_at?: string }
-        Update: { id?: string; user_id?: string; endpoint?: string; p256dh?: string; auth?: string; device_type?: string; created_at?: string; updated_at?: string }
-        Relationships: []
-      }
-      notification_deliveries: {
-        Row: { id: string; user_id: string; notification_key: string; sent_at: string }
-        Insert: { id?: string; user_id: string; notification_key: string; sent_at?: string }
-        Update: { id?: string; user_id?: string; notification_key?: string; sent_at?: string }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string
@@ -380,6 +410,39 @@ export type Database = {
           email?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          device_type: string
+          endpoint: string
+          id: string
+          p256dh: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          device_type: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          device_type?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

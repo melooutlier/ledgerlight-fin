@@ -30,6 +30,7 @@ import { Route as AuthenticatedOrcamentoRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
 import { Route as AuthenticatedPoupancaRouteImport } from './routes/_authenticated/poupanca'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
+import { Route as ApiPublicJobsMelfyNotificationsRouteImport } from './routes/api/public/jobs/melfy-notifications'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -139,6 +140,12 @@ const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
   path: '/relatorios',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicJobsMelfyNotificationsRoute =
+  ApiPublicJobsMelfyNotificationsRouteImport.update({
+    id: '/api/public/jobs/melfy-notifications',
+    path: '/api/public/jobs/melfy-notifications',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/planos': typeof AuthenticatedPlanosRoute
   '/poupanca': typeof AuthenticatedPoupancaRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/api/public/jobs/melfy-notifications': typeof ApiPublicJobsMelfyNotificationsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -183,6 +191,7 @@ export interface FileRoutesByTo {
   '/planos': typeof AuthenticatedPlanosRoute
   '/poupanca': typeof AuthenticatedPoupancaRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/api/public/jobs/melfy-notifications': typeof ApiPublicJobsMelfyNotificationsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -207,6 +216,7 @@ export interface FileRoutesById {
   '/_authenticated/planos': typeof AuthenticatedPlanosRoute
   '/_authenticated/poupanca': typeof AuthenticatedPoupancaRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/api/public/jobs/melfy-notifications': typeof ApiPublicJobsMelfyNotificationsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/planos'
     | '/poupanca'
     | '/relatorios'
+    | '/api/public/jobs/melfy-notifications'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/planos'
     | '/poupanca'
     | '/relatorios'
+    | '/api/public/jobs/melfy-notifications'
   id:
     | '__root__'
     | '/'
@@ -276,6 +288,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planos'
     | '/_authenticated/poupanca'
     | '/_authenticated/relatorios'
+    | '/api/public/jobs/melfy-notifications'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -285,6 +298,7 @@ export interface RootRouteChildren {
   FuncionalidadesRoute: typeof FuncionalidadesRoute
   PrecosRoute: typeof PrecosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiPublicJobsMelfyNotificationsRoute: typeof ApiPublicJobsMelfyNotificationsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -436,6 +450,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRelatoriosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/jobs/melfy-notifications': {
+      id: '/api/public/jobs/melfy-notifications'
+      path: '/api/public/jobs/melfy-notifications'
+      fullPath: '/api/public/jobs/melfy-notifications'
+      preLoaderRoute: typeof ApiPublicJobsMelfyNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -485,6 +506,7 @@ const rootRouteChildren: RootRouteChildren = {
   FuncionalidadesRoute: FuncionalidadesRoute,
   PrecosRoute: PrecosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiPublicJobsMelfyNotificationsRoute: ApiPublicJobsMelfyNotificationsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

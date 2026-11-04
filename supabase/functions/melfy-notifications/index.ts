@@ -53,7 +53,21 @@ Deno.serve(async (req) => {
       const result = await deliver(user.id, { title: "Melfy — teste de notificações", body: "Está tudo pronto! As notificações deste dispositivo estão a funcionar. ✨", url: "/inicio", tag: "melfy-test" }, `test:${crypto.randomUUID()}`);
       return json(result);
     }
-    if (req.headers.get("x-cron-secret") !== Deno.env.get("MELFY_CRON_SECRET")) return json({ error: "Não autorizado." }, 401);
+    // Accepts MELFY_CRON_SECRET from the environment or the melfy_cron_secret
+    // entry stored in the project Vault, so scheduled calls stay authenticated
+    // without the secret ever leaving the server side.
+    const cronProvided = req.headers.get("x-cron-secret");
+    const cronEnvSecret = Deno.env.get("MELFY_CRON_SECRET");
+    const serviceSecret = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    let cronAuthorized =
+      (!!cronEnvSecret && !!cronProvided && cronProvided === cronEnvSecret) ||
+      (!!serviceSecret && !!cronProvided && cronProvided === serviceSecret);
+    if (!cronAuthorized && cronProvided) {
+      const { data: cronSecretRow } = await admin.schema("vault").from("decrypted_secrets")
+        .select("decrypted_secret").eq("name", "melfy_cron_secret").maybeSingle();
+      cronAuthorized = !!cronSecretRow?.decrypted_secret && cronProvided === cronSecretRow.decrypted_secret;
+    }
+    if (!cronAuthorized) return json({ error: "Não autorizado." }, 401);
 
     const now = new Date(); const p = localParts(now);
     const today = `${p.year}-${p.month}-${p.day}`; const tomorrow = dateOffset(today, 1);

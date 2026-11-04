@@ -29,6 +29,13 @@
       "when": 1792586388227,
       "tag": "0003_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793768114590,
+      "tag": "0004_enable_pg_cron_pg_net",
+      "breakpoints": true
     }
   ]
 }
