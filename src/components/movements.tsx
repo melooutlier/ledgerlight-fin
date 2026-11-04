@@ -156,7 +156,7 @@ function TransactionDialog({
         account_id: accountId === NONE ? null : accountId,
         confirmed,
         image_path,
-        description: description.trim() || (type === "expense" ? "Despesa" : "Entrada"),
+        description: description.trim() || (type === "expense" ? "Despesa" : "Receita"),
         amount: value,
         tx_date: date,
         category_id: categoryId === NONE ? null : categoryId,
@@ -176,10 +176,10 @@ function TransactionDialog({
   return (
     <>
     <Dialog open={state.open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="transaction-form-dialog sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {tx ? "Editar" : "Nova"} {type === "expense" ? "despesa" : "entrada"}
+            {tx ? "Editar" : "Nova"} {type === "expense" ? "despesa" : "receita"}
           </DialogTitle>
           <DialogDescription>
             Valor e categoria são o essencial. O resto é opcional.
@@ -307,7 +307,7 @@ function TransactionDialog({
     <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Nova categoria de {type === "expense" ? "despesa" : "entrada"}</DialogTitle>
+          <DialogTitle>Nova categoria de {type === "expense" ? "despesa" : "receita"}</DialogTitle>
           <DialogDescription>
             A categoria ficará disponível nesta movimentação e na página Categorias.
           </DialogDescription>
