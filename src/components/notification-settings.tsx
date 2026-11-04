@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 
 type Preferences = { daily_reminders_enabled: boolean; daily_times: string[]; fixed_bills_reminders: boolean; loans_reminders: boolean };
 const DEFAULTS: Preferences = { daily_reminders_enabled: true, daily_times: ["12:30", "20:00"], fixed_bills_reminders: true, loans_reminders: true };
-const VAPID_KEY = (import.meta as ImportMeta & { env: Record<string, string | undefined> }).env.VITE_VAPID_PUBLIC_KEY;
+const VAPID_KEY = (import.meta as ImportMeta & { env: Record<string, string | undefined> }).env["VITE_VAPID_PUBLIC_KEY"];
 
 function decodeKey(value: string) {
   const padded = value + "=".repeat((4 - value.length % 4) % 4);
@@ -72,9 +72,9 @@ export function NotificationSettings() {
       let subscription = await registration.pushManager.getSubscription();
       if (!subscription) subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: decodeKey(VAPID_KEY) });
       const json = subscription.toJSON();
-      if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth || !user) throw new Error("Não foi possível obter os dados da subscrição deste dispositivo.");
+      if (!json.endpoint || !json.keys?.["p256dh"] || !json.keys?.["auth"] || !user) throw new Error("Não foi possível obter os dados da subscrição deste dispositivo.");
       const { error } = await supabase.from("push_subscriptions").upsert({
-        user_id: user.id, endpoint: json.endpoint, p256dh: json.keys.p256dh, auth: json.keys.auth,
+        user_id: user.id, endpoint: json.endpoint, p256dh: json.keys["p256dh"], auth: json.keys["auth"],
         device_type: deviceType(), updated_at: new Date().toISOString(),
       }, { onConflict: "user_id,endpoint" });
       if (error) throw error;
