@@ -37,9 +37,9 @@ export const Route = createFileRoute("/_authenticated/inicio")({
   head: () => ({
     meta: [
       { title: "Início — Melfy" },
-      { name: "description", content: "Veja o seu saldo, entradas, despesas e valores a receber." },
+      { name: "description", content: "Veja o seu saldo, receitas, despesas e valores a receber." },
       { property: "og:title", content: "Início — Melfy" },
-      { property: "og:description", content: "Veja o seu saldo, entradas, despesas e valores a receber." },
+      { property: "og:description", content: "Veja o seu saldo, receitas, despesas e valores a receber." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
