@@ -209,7 +209,7 @@ function TransactionDialog({
               <SelectTrigger>
                 <SelectValue placeholder="Escolher categoria" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="!border-gray-200 !bg-white !text-gray-900">
                 <SelectItem value={NONE}>Sem categoria</SelectItem>
                 {options.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
@@ -230,7 +230,7 @@ function TransactionDialog({
                 <SelectTrigger>
                   <SelectValue placeholder="Método" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="!border-gray-200 !bg-white !text-gray-900">
                   <SelectItem value={NONE}>Não indicar</SelectItem>
                   {EXPENSE_METHODS.map((m) => (
                     <SelectItem key={m} value={m}>
@@ -272,7 +272,7 @@ function TransactionDialog({
                 <SelectTrigger>
                   <SelectValue placeholder="Nenhum" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="!border-gray-200 !bg-white !text-gray-900">
                   <SelectItem value={NONE}>Nenhum</SelectItem>
                   {advances.map((a) => (
                     <SelectItem key={a.id} value={a.id}>
@@ -671,7 +671,7 @@ function AccountSelect({ value, onChange }: { value: string; onChange: (v: strin
         <SelectTrigger>
           <SelectValue placeholder="Escolher conta" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="!border-gray-200 !bg-white !text-gray-900">
           <SelectItem value={NONE}>Não indicar</SelectItem>
           {accounts.map((a) => (
             <SelectItem key={a.id} value={a.id}>
