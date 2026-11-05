@@ -145,7 +145,7 @@
   .melfy-hero > img { object-position: 68% center; }
   .melfy-hero-wash { background: linear-gradient(180deg, color-mix(in oklch, var(--background) 70%, transparent), var(--background) 75%); }
 }
-input[type="date"] { -webkit-appearance: none; }
+input[type="date"] { -webkit-appearance: auto; appearance: auto; color-scheme: light; touch-action: manipulation; }
 input[type="date"]::-webkit-date-and-time-value { text-align: left; }
 @media (min-width: 1024px) { .app-main { padding-bottom: 3rem; } }
 @media (max-width: 639px) {
