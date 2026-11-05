@@ -1,66 +1,22 @@
 # Configuração das notificações inteligentes do Melfy
 
-O código da aplicação e o processador Web Push estão em `supabase/functions/melfy-notifications`. Para receber notificações com o Melfy fechado, conclua os passos abaixo no projeto Lovable Cloud/Supabase.
+O processador Web Push vive em `supabase/functions/melfy-notifications`. O agendamento é gerido pela plataforma (HTTP schedule) e passa por uma rota interna que encaminha para a função.
 
-## 1. Aplicar a migração
+## Estado atual (concluído)
 
-Aplique `supabase/migrations/20261103090000_melfy_smart_notifications.sql` no banco de dados do projeto. Ela cria:
-- `push_subscriptions` e políticas RLS por utilizador;
-- `notification_preferences` com horários e opções;
-- `notification_deliveries` para impedir duplicados;
-- coluna `active` em `household_bills`.
+1. **Migração** `supabase/migrations/20261103090000_melfy_smart_notifications.sql` — aplicada. Criou `push_subscriptions`, `notification_preferences`, `notification_deliveries`, a coluna `active` em `household_bills`, políticas RLS e permissões.
+2. **Edge Function** `melfy-notifications` — publicada. Aceita a chamada agendada com `x-cron-secret` (segredo do Vault ou `MELFY_CRON_SECRET`) e testes imediatos com a sessão do utilizador (`action: "test"`).
+3. **Extensões** `pg_cron` e `pg_net` — ativadas na base de dados.
+4. **Vault** — entradas `melfy_project_url` e `melfy_cron_secret` criadas (o segredo cron foi gerado dentro da base de dados; ninguém o conhece em texto claro).
+5. **Agendamento** — job gerido `melfy-smart-notifications-every-minute` (`* * * * *`), que chama a rota interna `/api/public/jobs/melfy-notifications` (`src/routes/api/public/jobs/melfy-notifications.ts`). A rota autentica-se com `authenticateCronRequest` e encaminha para a função com o segredo do lado do servidor. Verificado em logs: corre a cada minuto e responde 200.
+6. **Service Worker** `public/sw.js` — registado pela secção de notificações em Configurações quando o utilizador ativa as notificações.
 
-## 2. Gerar e configurar chaves VAPID
+## O que falta (depende do utilizador)
 
-Gere um par de chaves VAPID (por exemplo, com `npx web-push generate-vapid-keys`). Configure:
+- **`VITE_VAPID_PUBLIC_KEY`** — a chave pública VAPID precisa de estar disponível para o frontend (ela é pública e pode ficar no código). Enquanto faltar, os utilizadores não conseguem subscrever o dispositivo.
 
-**Variável pública do frontend (Lovable):**
-- `VITE_VAPID_PUBLIC_KEY` = chave pública VAPID.
+## Como testar
 
-**Secrets das Edge Functions (Supabase):**
-- `VAPID_PUBLIC_KEY` = mesma chave pública;
-- `VAPID_PRIVATE_KEY` = chave privada;
-- `VAPID_SUBJECT` = endereço de contacto, por exemplo `mailto:suporte@seudominio.com`;
-- `MELFY_CRON_SECRET` = segredo aleatório forte para proteger o processador agendado.
-
-Nunca coloque a chave privada VAPID nem o segredo cron em variáveis `VITE_*` ou no código do navegador.
-
-## 3. Publicar a Edge Function
-
-Publique a função `melfy-notifications` no projeto Supabase. A função usa autenticação do utilizador para o teste imediato e exige `x-cron-secret` para processar lembretes em lote.
-
-## 4. Agendar o processador (uma vez por minuto)
-
-Os horários são personalizáveis ao minuto. Por isso, o processador precisa de correr **a cada minuto** (um agendamento apenas de hora a hora não consegue respeitar horários como 12:30).
-
-Ative as extensões `pg_cron` e `pg_net` no Supabase e guarde no Vault:
-- `melfy_project_url` = URL do projeto Supabase;
-- `melfy_service_role_key` = service role key (segredo);
-- `melfy_cron_secret` = o mesmo valor de `MELFY_CRON_SECRET`.
-
-Depois execute no SQL Editor (ajuste o nome do job se já existir):
-
-```sql
-select cron.schedule(
-  'melfy-smart-notifications-every-minute',
-  '* * * * *',
-  $$
-  select net.http_post(
-    url := (select decrypted_secret from vault.decrypted_secrets where name = 'melfy_project_url')
-      || '/functions/v1/melfy-notifications',
-    headers := jsonb_build_object(
-      'Content-Type', 'application/json',
-      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'melfy_service_role_key'),
-      'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'melfy_cron_secret')
-    ),
-    body := '{"action":"process"}'::jsonb
-  );
-  $$
-);
-```
-
-O processador utiliza `Africa/Maputo` (UTC+2), verifica horários diários, contas fixas ativas e empréstimos com data prevista. A tabela de entregas evita que tentativas repetidas enviem o mesmo aviso duas vezes.
-
-## 5. Compatibilidade
-
-Web Push exige HTTPS e suporte do navegador. Em iPhone/iPad, a disponibilidade depende da versão do iOS e, normalmente, de a aplicação estar instalada no ecrã principal. O som e a apresentação final são controlados pelo sistema operativo; a aplicação pede vibração e usa o ícone Melfy, mas não consegue forçar som em todos os dispositivos.
+1. Em **Perfil e definições → Lembretes e Notificações**, clique em "Ativar notificações" (requer HTTPS e navegador com suporte; no iPhone/iPad normalmente exige a app instalada no ecrã principal).
+2. Clique em "Enviar notificação de teste" — a função envia com o fuso `Africa/Maputo`.
+3. Os lembretes diários seguem os horários definidos (1–3 por dia); os de contas fixas e empréstimos disparam um dia antes e no próprio dia do vencimento. A tabela `notification_deliveries` impede envios repetidos.
