@@ -1,3 +1,4 @@
+import { PaymentRequestsSection } from "@/components/admin-payment-requests";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
