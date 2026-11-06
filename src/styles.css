@@ -705,3 +705,21 @@ button.bg-primary:hover, a.bg-primary:hover { filter: brightness(1.04); box-shad
 .payment-info-dialog button[variant="outline"] {
   color: #111827 !important;
 }
+
+/* Força todas as escritas do diálogo de pagamento a preto, em qualquer tema */
+.payment-info-dialog,
+.payment-info-dialog * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  opacity: 1 !important;
+}
+.payment-info-dialog input::placeholder,
+.payment-info-dialog textarea::placeholder {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  opacity: 1 !important;
+}
+.payment-info-dialog svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
