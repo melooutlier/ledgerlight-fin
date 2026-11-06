@@ -100,7 +100,7 @@ function UserRow({ userId, name, email, joined, sub }: { userId: string; name: s
       <div className="min-w-0">
         <div className="flex items-center gap-2">
           <p className="truncate font-medium">{name ?? "—"}</p>
-          <Badge variant="secondary">{PLANS[eff].name}</Badge>
+          <Badge variant="secondary">{PLANS[(sub?.plan === "avancado" || sub?.plan === "casa" ? "avancado" : "pessoal")].name}</Badge>
           {sub?.status === "suspended" ? <Badge variant="destructive">Suspenso</Badge> : expired ? <Badge variant="destructive">Expirado</Badge> : !sub ? <Badge variant="outline">A aguardar autorização</Badge> : null}
         </div>
         <p className="truncate text-xs text-muted-foreground">{email} · desde {dateLabel(joined.slice(0, 10))}{sub?.expires_at ? ` · expira ${dateLabel(sub.expires_at)}` : ""}</p>
