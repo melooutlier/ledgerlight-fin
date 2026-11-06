@@ -64,7 +64,7 @@ function AuthPage() {
           password,
           options: {
             emailRedirectTo: window.location.origin,
-            data: { display_name: name.trim() || email.split("@")[0] },
+            data: { display_name: name.trim() || email.split("@")[0], requested_plan: search.plan ?? "pessoal" },
           },
         });
         if (error) throw error;
