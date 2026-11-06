@@ -21,7 +21,7 @@ export function PaymentDialog({ open, onOpenChange, plan = "avancado", annual = 
   const wa = `https://wa.me/258${PAYMENT.contact}?text=${encodeURIComponent(`Olá, envio o comprovativo do plano ${p.name} (${annual ? "anual" : "mensal"}) do Melfy. Email da conta: `)}`;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
+      <DialogContent className="payment-info-dialog max-h-[90vh] overflow-y-auto !border-gray-200 !bg-white !text-gray-900">
         <DialogHeader>
           <DialogTitle>{signup ? "Aderir ao" : "Actualizar para"} {p.name}</DialogTitle>
           <DialogDescription>
