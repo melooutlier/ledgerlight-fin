@@ -4,16 +4,14 @@ O processador Web Push vive em `supabase/functions/melfy-notifications`. O agend
 
 ## Estado atual (concluído)
 
+- **`VITE_VAPID_PUBLIC_KEY`** — configurada no `.env` (chave pública, pode ficar no código). Em **05/11/2026** o fluxo foi verificado de ponta a ponta: subscrição criada, gravada em `push_subscriptions` e "Enviar notificação de teste" respondeu com sucesso.
+
 1. **Migração** `supabase/migrations/20261103090000_melfy_smart_notifications.sql` — aplicada. Criou `push_subscriptions`, `notification_preferences`, `notification_deliveries`, a coluna `active` em `household_bills`, políticas RLS e permissões.
 2. **Edge Function** `melfy-notifications` — publicada. Aceita a chamada agendada com `x-cron-secret` (segredo do Vault ou `MELFY_CRON_SECRET`) e testes imediatos com a sessão do utilizador (`action: "test"`).
 3. **Extensões** `pg_cron` e `pg_net` — ativadas na base de dados.
 4. **Vault** — entradas `melfy_project_url` e `melfy_cron_secret` criadas (o segredo cron foi gerado dentro da base de dados; ninguém o conhece em texto claro).
 5. **Agendamento** — job gerido `melfy-smart-notifications-every-minute` (`* * * * *`), que chama a rota interna `/api/public/jobs/melfy-notifications` (`src/routes/api/public/jobs/melfy-notifications.ts`). A rota autentica-se com `authenticateCronRequest` e encaminha para a função com o segredo do lado do servidor. Verificado em logs: corre a cada minuto e responde 200.
 6. **Service Worker** `public/sw.js` — registado pela secção de notificações em Configurações quando o utilizador ativa as notificações.
-
-## O que falta (depende do utilizador)
-
-- **`VITE_VAPID_PUBLIC_KEY`** — a chave pública VAPID precisa de estar disponível para o frontend (ela é pública e pode ficar no código). Enquanto faltar, os utilizadores não conseguem subscrever o dispositivo.
 
 ## Como testar
 
