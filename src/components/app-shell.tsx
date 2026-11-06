@@ -1,5 +1,7 @@
+
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { ActivationScreen } from "@/components/activation-screen";
 import {
   ArrowDownLeft,
   ArrowLeftRight,
