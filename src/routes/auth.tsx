@@ -42,6 +42,7 @@ function AuthPage() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
+  const [resending, setResending] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -81,9 +82,50 @@ function AuthPage() {
         navigate({ to: "/inicio" });
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Não foi possível continuar.");
+      const authError = err as { message?: string; code?: string; status?: number };
+      const errorMessage = (authError.message || "").toLowerCase();
+      const needsConfirmation =
+        authError.code === "email_not_confirmed" ||
+        errorMessage.includes("email not confirmed") ||
+        errorMessage.includes("email_not_confirmed");
+
+      if (mode === "signin" && needsConfirmation) {
+        setCheckEmail(true);
+        toast.error("Este email ainda não foi confirmado. Pode pedir um novo link abaixo.");
+      } else if (mode === "signin" && (
+        authError.code === "invalid_credentials" ||
+        errorMessage.includes("invalid login credentials")
+      )) {
+        toast.error("Email ou palavra-passe incorretos. Confirme os dados ou recupere a palavra-passe.");
+      } else if (authError.status === 429) {
+        toast.error("Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.");
+      } else {
+        toast.error(authError.message || "Não foi possível continuar. Verifique a ligação e tente novamente.");
+      }
     } finally {
       setLoading(false);
+    }
+  }
+
+
+  async function handleResendConfirmation() {
+    if (!email.trim()) {
+      toast.error("Indique o email da conta.");
+      return;
+    }
+    setResending(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: email.trim(),
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) throw error;
+      toast.success("Pedido de confirmação enviado. Verifique também a pasta Spam/Lixo eletrónico.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Não foi possível reenviar o email.");
+    } finally {
+      setResending(false);
     }
   }
 
@@ -115,11 +157,14 @@ function AuthPage() {
           <div className="rounded-xl border bg-card p-6 text-center text-sm">
             <p className="font-medium">Confirme o seu email</p>
             <p className="mt-2 text-muted-foreground">
-              Enviámos uma mensagem para <strong>{email}</strong>. Clique no link para activar a
-              conta e depois volte aqui para entrar.
+              A conta associada a <strong>{email}</strong> precisa de confirmação. Se a mensagem não
+              chegou, verifique Spam/Lixo eletrónico ou solicite um novo link.
             </p>
-            <Button variant="outline" className="mt-4 w-full" onClick={() => setCheckEmail(false)}>
-              Voltar
+            <Button className="mt-4 w-full" onClick={handleResendConfirmation} disabled={resending}>
+              {resending ? "A enviar..." : "Reenviar email de confirmação"}
+            </Button>
+            <Button variant="outline" className="mt-2 w-full" onClick={() => setCheckEmail(false)}>
+              Voltar ao login
             </Button>
           </div>
         ) : (
