@@ -667,3 +667,41 @@ button.bg-primary:hover, a.bg-primary:hover { filter: brightness(1.04); box-shad
   opacity: 1 !important;
   -webkit-text-fill-color: #6b7280 !important;
 }
+
+
+/* Dados de pagamento: contraste garantido em qualquer tema */
+.payment-info-dialog,
+.payment-info-dialog[data-state="open"] {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border-color: #e5e7eb !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+.payment-info-dialog h2,
+.payment-info-dialog p,
+.payment-info-dialog strong,
+.payment-info-dialog span,
+.payment-info-dialog [data-slot="dialog-description"] {
+  color: #111827 !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+.payment-info-dialog .text-muted-foreground {
+  color: #4b5563 !important;
+}
+.payment-info-dialog .bg-muted\/40 {
+  background: #f3f4f6 !important;
+}
+.payment-info-dialog .border-primary\/40 {
+  border-color: #a3d977 !important;
+}
+.payment-info-dialog .bg-primary\/5 {
+  background: #f4faec !important;
+}
+.payment-info-dialog button {
+  opacity: 1 !important;
+}
+.payment-info-dialog button[variant="outline"] {
+  color: #111827 !important;
+}
