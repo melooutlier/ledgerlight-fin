@@ -161,7 +161,7 @@ function Shell({ children }: { children: ReactNode }) {
         <main className="app-main mx-auto w-full min-w-0 max-w-[1400px] px-4 pt-5 sm:px-6 lg:px-8 lg:pt-8">
           {isLoading ? (
             <div className="rounded-2xl border bg-card p-8 text-center text-sm text-muted-foreground">A verificar os acessos da sua conta…</div>
-          ) : contentAllowed ? children : <AccessBlocked />}
+          ) : contentAllowed ? children : <ActivationScreen />}
         </main>
       </div>
       <MobileNav />
