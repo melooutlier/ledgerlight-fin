@@ -48,6 +48,7 @@ function AdminPage() {
         <Stat label="Avançado" value={String(counts.avancado)} />
         <Stat label="Receita mensal estimada" value={money(revenue)} />
       </div>
+      <PaymentRequestsSection />
       <Input placeholder="Pesquisar por nome ou email…" className="mb-3 max-w-sm" value={search} onChange={(e) => setSearch(e.target.value)} />
       <div className="divide-y rounded-xl border bg-card">
         {list.map((u) => (
