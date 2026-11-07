@@ -17,3 +17,4 @@
 - Receipt photos go to the private "receipts" bucket under <user_id>/ and are shown via signed URLs; why: photos are private.
 - Shared shell and UI primitives own responsive navigation, touch targets and safe-area spacing; why: consistent phone and desktop behavior without changing financial logic.
 - Smart-notification processing stays in the existing melfy-notifications Edge Function; the managed HTTP schedule calls the TanStack route /api/public/jobs/melfy-notifications, which authenticates via authenticateCronRequest and forwards with the service credential; why: minute-level Web Push scheduling stays on the platform's managed scheduler without exposing secrets.
+- Manual payment receipt queries, private uploads, and administrator review stay in `src/lib/payments.ts`; why: keep the activation flow's payment data and review actions consistent.
